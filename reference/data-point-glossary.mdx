@@ -1,0 +1,96 @@
+---
+title: "Full Data Point Glossary"
+description: "Definitions for all rule types with data source and meaning."
+---
+
+Use this as a dictionary for Strategy Editor rule types.
+
+#### Contract Security
+
+* **Is Honeypot**
+  * Description: Detects malicious code preventing sells after buys
+  * Type: Boolean (True/False)
+  * Source: RugCheck, DexTools
+
+* **Has Minting Authority**
+  * Description: A wallet can create new tokens (supply dilution risk)
+  * Type: Boolean (True/False)
+  * Source: RugCheck
+
+* **Has Freeze Authority**
+  * Description: A wallet can freeze trading or restrict wallets
+  * Type: Boolean (True/False)
+  * Source: RugCheck
+
+* **Contract Renounced**
+  * Description: Dev relinquished contract ownership; prevents future malicious changes
+  * Type: Boolean (True/False)
+  * Source: DexTools
+
+* **Mutable Metadata**
+  * Description: Core metadata (name, symbol) can be changed post‑launch
+  * Type: Boolean (True/False)
+  * Source: RugCheck
+
+#### Market Metrics
+
+* **Liquidity (USD)**
+  * Description: USD value in the primary liquidity pool
+  * Type: Number
+  * Source: DexTools
+
+* **Market Cap (USD)**
+  * Description: Current Price × Circulating Supply
+  * Type: Number
+  * Source: DexTools
+
+* **Price Change (1h / 24h %)**
+  * Description: Percent change over the last 1h or 24h
+  * Type: Number
+  * Source: DexTools
+
+* **Buy/Sell Tax (%)**
+  * Description: Fee charged per buy/sell
+  * Type: Number
+  * Source: RugCheck, DexTools
+
+#### Holder & Dev Behavior
+
+* **Total Holders**
+  * Description: Unique wallets currently holding
+  * Type: Number
+  * Source: DexTools, RugCheck
+
+* **Top 10 Holder %**
+  * Description: Supply share held by top 10 wallets (ex‑LP/CEX)
+  * Type: Number
+  * Source: RugCheck
+
+* **Creator Rug History**
+  * Description: Whether creator wallet is tied to previous rugs
+  * Type: Boolean (True/False)
+  * Source: RugCheck
+
+* **Followed Wallet Holder Count**
+  * Description: Number of your followed wallets holding this token
+  * Type: Number
+  * Source: Internal
+
+#### Social Sentiment (Pro)
+
+* **Social Volume (1h)**
+  * Description: Unique mentions on Twitter in last hour
+  * Type: Number
+  * Source: LunarCrush
+
+* **Social Velocity (% Change)**
+  * Description: Rate of change in social volume
+  * Type: Number
+  * Source: LunarCrush
+
+* **Sentiment Ratio (Bullish/Bearish)**
+  * Description: Ratio of positive to negative mentions
+  * Type: Number
+  * Source: LunarCrush
+
+

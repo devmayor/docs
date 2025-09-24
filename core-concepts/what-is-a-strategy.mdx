@@ -1,0 +1,29 @@
+---
+title: "Core Concepts: What is a Strategy?"
+description: "Understand how Triggers and Rules combine to produce actionable alerts."
+---
+
+At its heart, MemeTrader constantly asks: "Does this token match my criteria?" A Strategy is your answer. It's the set of instructions that defines what opportunities you want to find.
+
+Every strategy is built from two building blocks: **Triggers** and **Rules**.
+
+`Trigger (When to look) + Rules (What to look for) = Action (Alert)`
+
+<Frame caption="From events to alerts">
+<img src="/images/hero-dark.png" alt="Funnel: Events → Triggers → Rules → Alert" />
+</Frame>
+
+<CardGroup cols={2}>
+  <Card title="Triggers" icon="bolt" href="/core-concepts/triggers-vs-rules">
+    Define when the engine should wake up and analyze.
+  </Card>
+  <Card title="Rules" icon="list-check" href="/core-concepts/rule-groups">
+    Define what must be true for an alert to fire.
+  </Card>
+</CardGroup>
+
+<Tip>
+Master this mental model. Most strategy issues are either the wrong Trigger (timing) or the wrong Rules (quality).
+</Tip>
+
+

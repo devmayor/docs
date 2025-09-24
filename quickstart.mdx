@@ -1,80 +1,54 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Quick Start: 5 Minutes to Your First Alert"
+description: "Connect wallet, clone a safe template, and link Telegram."
 ---
 
-## Get started in three steps
+This guide is for traders who want value now. You'll connect, activate a battle‑tested strategy, and receive alerts in Telegram.
 
-Get your documentation site running locally and make your first customization.
+<Frame caption="60‑second overview">
+  <img src="/images/hero-light.png" alt="Quick start workflow: connect, clone, link" />
+</Frame>
 
-### Step 1: Set up your local environment
+<Steps>
+<Step title="Connect your wallet">
+  Your account is created by signing a message. We never request private keys or approvals.
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+  1. Open the app: `https://app.memetrader.ai`
+  2. Click `Connect Wallet` (top‑right)
+  3. Choose your provider (Phantom, MetaMask)
+  4. Sign the login message
 
-### Step 2: Deploy your changes
+  <Check>Dashboard is active after signing.</Check>
+</Step>
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+<Step title="Clone a Safe Launch strategy">
+  Start with a template designed to filter scams and low‑effort launches.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+  1. Click `+ Create New Strategy`
+  2. Select template: "Fort Knox (Max Safety)"
+  3. Name it (e.g., "My First Sniper") and `Save Strategy`
+  4. On the Strategies page, click `Activate`
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+  <Info>
+  Template includes essential Dealbreakers (honeypot, taxes, mint authority).
+  </Info>
+</Step>
 
-### Step 3: Go live
+<Step title="Link Telegram for alerts">
+  1. Go to `Settings → Notification Channels`
+  2. Click `Generate Link Code` (6‑digit)
+  3. In Telegram, open `@MemeTraderBot`
+  4. Send: `/link 123-456` (replace with your code)
+  5. Wait for confirmation; dashboard shows Connected
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+  <Tip>
+  If the bot doesn't respond within 10s, resend once—Telegram rate‑limits occasionally.
+  </Tip>
+</Step>
+</Steps>
 
-## Next steps
+### You're ready
 
-Now that you have your docs running, explore these key features:
+Your strategy is live and monitoring. You'll get actionable alerts for legitimate, high‑potential launches.
 
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+<Card title="Next: Core Concepts" icon="book-open" href="/core-concepts/what-is-a-strategy" />

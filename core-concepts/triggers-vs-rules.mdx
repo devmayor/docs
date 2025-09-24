@@ -1,0 +1,31 @@
+---
+title: "Triggers vs. Rules: The 'When' vs. The 'What'"
+description: "Learn the difference between event timing and evaluation criteria."
+---
+
+It's essential to understand the difference between a Trigger and a Rule.
+
+#### Triggers: The "When"
+
+A Trigger is the event that says: wake up and analyze now. Your strategy runs only when an event matches one of your triggers.
+
+- **Event-driven:**
+  - A New Token is Created
+  - A Tweet Mentions a Token
+  - A Followed Dev Deploys a New Token
+
+- **State-driven:**
+  - A Token Matches a Screener (e.g., 7 days old and crosses $1M market cap)
+
+A strategy can have multiple triggers. It runs if ANY of them fire.
+
+#### Rules: The "What"
+
+Rules are the conditions that must be true about the token when analysis runs. See Dealbreakers and Rule Groups for structure and logic.
+
+<CardGroup cols={2}>
+  <Card title="Dealbreakers" icon="shield" href="/core-concepts/dealbreakers" />
+  <Card title="Rule Groups (AND/OR)" icon="brackets-curly" href="/core-concepts/rule-groups" />
+</CardGroup>
+
+

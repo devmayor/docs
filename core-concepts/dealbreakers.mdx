@@ -1,0 +1,26 @@
+---
+title: "Understanding Dealbreakers"
+description: "Your non-negotiable safety net. If one fails, no alert."
+---
+
+After a trigger fires, the engine checks your Dealbreakers first.
+
+A Dealbreaker is a condition that must be 100% true. If any fail, evaluation stops immediately and no alert is sent.
+
+Think of them as the bouncer at the door. If standards aren't met, it's not getting in.
+
+#### Common use
+
+- Is Honeypot is False
+- Sell Tax (%) is less than 25
+- Has Minting Authority is False
+
+<Frame caption="Flow: Dealbreakers first">
+  <img src="/images/checks-passed.png" alt="Flowchart: Token Found → Passes Dealbreakers? → Continue or Rejected" />
+</Frame>
+
+<Tip>
+Start every strategy by defining Dealbreakers. They're your fastest path to fewer false positives.
+</Tip>
+
+

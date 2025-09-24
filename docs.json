@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "MemeTrader Docs",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -14,35 +14,63 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Introduction",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "index"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Getting Started",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "quickstart"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Core Concepts",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "core-concepts/what-is-a-strategy",
+              "core-concepts/triggers-vs-rules",
+              "core-concepts/dealbreakers",
+              "core-concepts/rule-groups"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Feature Guides",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "feature-guides/strategies",
+              "feature-guides/strategy-editor-deep-dive",
+              "feature-guides/discovery-hubs/author-hub",
+              "feature-guides/discovery-hubs/intelligence-hubs",
+              "feature-guides/advanced-alerting/screener",
+              "feature-guides/advanced-alerting/exit-strategies",
+              "feature-guides/advanced-alerting/watchlist"
+            ]
+          },
+          {
+            "group": "AI Engine",
+            "pages": [
+              "ai-engine/narrative-engine"
+            ]
+          },
+          {
+            "group": "Developer Platform",
+            "pages": [
+              "developer-platform/overview"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "reference/data-point-glossary",
+              "reference/trigger-glossary",
+              "reference/glossary"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "support/faq",
+              "support/contact-community"
             ]
           }
         ]
