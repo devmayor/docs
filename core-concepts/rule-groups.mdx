@@ -1,5 +1,5 @@
 ---
-title: "The Power of Rule Groups (AND/OR Logic)"
+title: "Understanding Rules and Rule Groups (AND/OR Logic)"
 description: "Combine conditions with MATCH ALL and MATCH ANY for precision."
 ---
 
@@ -29,6 +29,39 @@ Example: "Early Momentum"
 
 You can combine multiple groups. Tokens must pass Group 1 AND Group 2 AND Group 3.
 
-<Card title="Build it in the Strategy Editor" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive" />
+### Combining Groups for Ultimate Precision
+
+Think of each Rule Group as its own checklist. A token must pass every checklist to qualify. This separation lets you tune safety, quality, and momentum independently without rebuilding your logic.
+
+#### Complete Example: "Safe Momentum" Alert
+
+For a token to trigger this alert, it must pass all four groups below:
+
+1. **Basic Safety Checklist (MATCH ALL)**
+   - Is Honeypot is False
+   - AND Sell Tax (%) is less than 10
+
+2. **Developer Trust Checklist (MATCH ALL)**
+   - Creator Rug History is False
+   - AND LP Locked is True
+
+3. **Early On-Chain Momentum (MATCH ANY)**
+   - Initial Buy Pressure (%) is greater than 80
+   - OR Liquidity (USD) is greater than $25,000
+
+4. **Smart Money & Social Proof (MATCH ANY)**
+   - Followed Wallet Holder Count is greater than 0
+   - OR Social Volume (15m) is greater than 50
+
+This design enforces safety and dev trust, while allowing either on‑chain momentum or social validation to qualify the opportunity.
+
+<CardGroup cols={2}>
+  <Card title="Deep Dive: Strategy Editor" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive">
+    Build groups step‑by‑step and preview logic.
+  </Card>
+  <Card title="Explore Rule Library" icon="book-open" href="/reference/data-point-glossary">
+    Definitions and sources for every rule type.
+  </Card>
+</CardGroup>
 
 
