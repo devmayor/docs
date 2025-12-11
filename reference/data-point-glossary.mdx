@@ -7,184 +7,152 @@ Use this as a dictionary for Strategy Editor rule types.
 
 ### Contract Controls
 
-* **Can Mint New Tokens**
-  * Description: Checks if the contract permits creating additional tokens (dilution risk)
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **LP Locked**
-  * Description: Indicates whether the liquidity pool is locked (reduces rug risk)
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Has Minting Authority**
-  * Description: Whether the contract has mint permissions enabled
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Has Freeze Authority**
-  * Description: Whether the contract can freeze balances or transfers
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Low LP Providers**
-  * Description: Flags an unusually low number of LP providers
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Mutable Metadata**
-  * Description: Token metadata (e.g., name/symbol) can still be changed
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Transfer Fee Max Amount**
-  * Description: Maximum transfer fee amount permitted by the token
-  * Type: Number (USD)
-  * Operators: less than
-
-* **Has Transfer Fee**
-  * Description: Whether transfers incur a fee
-  * Type: Boolean (True/False)
-  * Operators: is
+- **Can Mint New Tokens**
+  - Description: Checks if the contract permits creating additional tokens (dilution risk)
+  - Type: Boolean (True/False)
+  - Operators: is
+- **LP Locked**
+  - Description: Indicates whether the liquidity pool is locked (reduces rug risk)
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Has Minting Authority**
+  - Description: Whether the contract has mint permissions enabled
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Has Freeze Authority**
+  - Description: Whether the contract can freeze balances or transfers
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Low LP Providers**
+  - Description: Flags an unusually low number of LP providers
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Mutable Metadata**
+  - Description: Token metadata (e.g., name/symbol) can still be changed
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Transfer Fee Max Amount**
+  - Description: Maximum transfer fee amount permitted by the token
+  - Type: Number (USD)
+  - Operators: less than
+- **Has Transfer Fee**
+  - Description: Whether transfers incur a fee
+  - Type: Boolean (True/False)
+  - Operators: is
 
 ### Liquidity & Fees
 
-* **Sell Tax**
-  * Description: Percentage charged on sells (high values can trap holders)
-  * Type: Percentage (%)
-  * Operators: less than
-
-* **Buy Tax**
-  * Description: Percentage charged on buys (affects entry cost)
-  * Type: Percentage (%)
-  * Operators: less than
-
-* **Liquidity (USD)**
-  * Description: Total USD in primary liquidity pools
-  * Type: Number (USD)
-  * Operators: greater than, less than
-
-* **Market Cap**
-  * Description: Price × circulating supply
-  * Type: Number (USD)
-  * Operators: greater than, less than
-
-* **24h Trading Volume**
-  * Description: USD volume traded over the last 24 hours
-  * Type: Number (USD)
-  * Operators: greater than, less than
-
-* **24h Price Change**
-  * Description: Percentage price movement over the last 24 hours
-  * Type: Percentage (%)
-  * Operators: greater than, less than
-
-* **Fully Diluted Valuation (FDV)**
-  * Description: Market cap assuming full token supply is circulating
-  * Type: Number (USD)
-  * Operators: greater than, less than
-
-* **LP Locked %**
-  * Description: Percentage of LP tokens locked
-  * Type: Percentage (%)
-  * Operators: greater than, less than
+- **Sell Tax**
+  - Description: Percentage charged on sells (high values can trap holders)
+  - Type: Percentage (%)
+  - Operators: less than
+- **Buy Tax**
+  - Description: Percentage charged on buys (affects entry cost)
+  - Type: Percentage (%)
+  - Operators: less than
+- **Liquidity (USD)**
+  - Description: Total USD in primary liquidity pools
+  - Type: Number (USD)
+  - Operators: greater than, less than
+- **Market Cap**
+  - Description: Price × circulating supply
+  - Type: Number (USD)
+  - Operators: greater than, less than
+- **24h Trading Volume**
+  - Description: USD volume traded over the last 24 hours
+  - Type: Number (USD)
+  - Operators: greater than, less than
+- **24h Price Change**
+  - Description: Percentage price movement over the last 24 hours
+  - Type: Percentage (%)
+  - Operators: greater than, less than
+- **Fully Diluted Valuation (FDV)**
+  - Description: Market cap assuming full token supply is circulating
+  - Type: Number (USD)
+  - Operators: greater than, less than
+- **LP Locked %**
+  - Description: Percentage of LP tokens locked
+  - Type: Percentage (%)
+  - Operators: greater than, less than
 
 ### Ownership & Concentration
 
-* **Total Holders**
-  * Description: Count of unique wallets holding the token
-  * Type: Number
-  * Operators: greater than, less than
-
-* **Top 10 Holder %**
-  * Description: Supply share held by the top 10 non‑LP, non‑CEX wallets
-  * Type: Percentage (%)
-  * Operators: greater than, less than
-
-* **Dev Wallet %**
-  * Description: Percentage of supply held by known dev wallets
-  * Type: Percentage (%)
-  * Operators: greater than, less than
-
-* **Insider Count**
-  * Description: Number of wallets flagged as insiders
-  * Type: Number
-  * Operators: less than, greater than
-
-* **Creator Token Count**
-  * Description: Number of tokens previously created by the contract creator
-  * Type: Number
-  * Operators: greater than, less than
-
-* **High Ownership Concentration**
-  * Description: Flags abnormally concentrated ownership among few wallets
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Top 10 High Ownership**
-  * Description: Top 10 wallets collectively control a large share
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Single Holder Dominance**
-  * Description: A single wallet controls a large portion of supply
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Creator Rug History**
-  * Description: Creator address is linked to prior rug pulls
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Creator Has Multiple Tokens**
-  * Description: Creator has launched multiple tokens historically
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Has Creator Balance**
-  * Description: Creator still holds a token balance
-  * Type: Boolean (True/False)
-  * Operators: is
+- **Total Holders**
+  - Description: Count of unique wallets holding the token
+  - Type: Number
+  - Operators: greater than, less than
+- **Top 10 Holder %**
+  - Description: Supply share held by the top 10 non‑LP, non‑CEX wallets
+  - Type: Percentage (%)
+  - Operators: greater than, less than
+- **Dev Wallet %**
+  - Description: Percentage of supply held by known dev wallets
+  - Type: Percentage (%)
+  - Operators: greater than, less than
+- **Insider Count**
+  - Description: Number of wallets flagged as insiders
+  - Type: Number
+  - Operators: less than, greater than
+- **Creator Token Count**
+  - Description: Number of tokens previously created by the contract creator
+  - Type: Number
+  - Operators: greater than, less than
+- **High Ownership Concentration**
+  - Description: Flags abnormally concentrated ownership among few wallets
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Top 10 High Ownership**
+  - Description: Top 10 wallets collectively control a large share
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Single Holder Dominance**
+  - Description: A single wallet controls a large portion of supply
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Creator Rug History**
+  - Description: Creator address is linked to prior rug pulls
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Creator Has Multiple Tokens**
+  - Description: Creator has launched multiple tokens historically
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Has Creator Balance**
+  - Description: Creator still holds a token balance
+  - Type: Boolean (True/False)
+  - Operators: is
 
 ### Risk
 
-* **Is Honeypot**
-  * Description: Detects contracts designed to block sells after buys
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Risk Score**
-  * Description: Normalized risk score for the token (lower is safer)
-  * Type: Number
-  * Operators: less than
-
-* **Risk Level**
-  * Description: Risk classification bucket
-  * Type: String (CRITICAL, HIGH, MEDIUM, LOW)
-  * Operators: equals, does not equal
-
-* **Rugged**
-  * Description: Indicates whether the token has already rugged
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Low Liquidity**
-  * Description: Flags insufficient liquidity depth
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Has Lockers**
-  * Description: Indicates the presence of token lockers
-  * Type: Boolean (True/False)
-  * Operators: is
-
-* **Risk Count**
-  * Description: Number of discrete risks detected
-  * Type: Number
-  * Operators: less than
-
-* **Token Mutable**
-  * Description: Indicates whether token state remains mutable
-  * Type: Boolean (True/False)
-  * Operators: is
-
+- **Is Honeypot**
+  - Description: Detects contracts designed to block sells after buys
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Risk Score**
+  - Description: Normalized risk score for the token (lower is safer)
+  - Type: Number
+  - Operators: less than
+- **Risk Level**
+  - Description: Risk classification bucket
+  - Type: String (CRITICAL, HIGH, MEDIUM, LOW)
+  - Operators: equals, does not equal
+- **Rugged**
+  - Description: Indicates whether the token has already rugged
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Low Liquidity**
+  - Description: Flags insufficient liquidity depth
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Has Lockers**
+  - Description: Indicates the presence of token lockers
+  - Type: Boolean (True/False)
+  - Operators: is
+- **Risk Count**
+  - Description: Number of discrete risks detected
+  - Type: Number
+  - Operators: less than
+- **Token Mutable**
+  - Description: Indicates whether token state remains mutable
+  - Type: Boolean (True/False)
+  - Operators: is
