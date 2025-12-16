@@ -4,12 +4,19 @@ description: "Events that cause strategies to run—the 'when' of your alerts."
 ---
 
 - **A New Token is Created**
-  - Description: Fires when a token is added on the solana chain or on meme platforms like pump.fun
+  - Description: Fires when a token is added on the Solana chain or on meme platforms like pump.fun
+
+- **Almost Graduated Tokens**
+  - Description: Fires when tokens have gone past the newly created stage and are heading for graduation
+
+- **Graduated Tokens**
+  - Description: Fires when a token has finally graduated from platforms like pump.fun
+
 - **A Tweet Mentions a Token**
-  - Description: Fires when a tweet matching your settings and author list mentions a token (cashtag or contract)
-- **A Narrative Emerges (Pro)**
-  - Description: Fires when a new token matches an AI‑identified narrative from your monitored tweet handles
+  - Description: Fires when a tweet mentions a token either by contract address (CA) or token name. Matches your settings and author list.
+
+- **AI Generated Tokens from Tweets**
+  - Description: Fires when possible token names are generated from tweets and are found to be newly created. For example, if Elon tweets about "colony on mars," the AI will predict and create likely token names from his tweets like `Mars` or `Mars doge`. When new launches are created with this likeness, they will trigger your rules to evaluate.
+
 - **A Followed Dev Deploys a New Token**
-  - Description: Fires when a developer from My Developers creates a new contract token
-- **A Token Matches a Search token filter**
-  - Description: Fires when your scheduled search token filter finds a token matching all filter criteria
+  - Description: Fires when a developer you follow launches a new token

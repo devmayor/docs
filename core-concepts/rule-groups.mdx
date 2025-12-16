@@ -1,11 +1,15 @@
 ---
-title: "Understanding Rules and Rule Groups (AND/OR Logic)"
+title: "Understanding Rules and Rule Groups (Advanced Strategy Builder)"
 description: "Combine conditions with MATCH ALL and MATCH ANY for precision."
 ---
 
+<Info>
+**Rule Groups are only available in Advanced Mode.** To use Rule Groups with MATCH ALL and MATCH ANY logic, you must enable Advanced Mode in the Strategy Editor header. In Basic Mode, rules are evaluated using Flexible Matching instead.
+</Info>
+
 If a token passes all Dealbreakers, it moves to Rule Groups. This is where nuance lives.
 
-Rule Groups let you combine multiple conditions with AND/OR logic.
+Rule Groups let you combine multiple conditions with AND/OR logic. This feature is exclusive to **Advanced Mode** and provides granular control over how rules are evaluated.
 
 #### MATCH ALL (AND)
 
@@ -32,7 +36,10 @@ You can combine multiple groups. Tokens must pass Group 1 AND Group 2 AND Group 
 ### Combining Groups for Ultimate Precision
 
 Think of each Rule Group as its own checklist. A token must pass every checklist to qualify. This separation lets you tune safety, quality, and momentum independently without rebuilding your logic.
-![Alt text describing the image](images/image(12).png)
+
+<Frame caption="Advanced Mode Rule Groups interface">
+  <img src="/images/advanced-mode.png" alt="Advanced Mode showing Rule Groups with MATCH ALL and MATCH ANY options" />
+</Frame>
 
 #### Complete Example: "Safe Momentum" Alert
 
@@ -55,6 +62,61 @@ For a token to trigger this alert, it must pass all four groups below:
    - OR Social Volume (15m) is greater than 50
 
 This design enforces safety and dev trust, while allowing either on‑chain momentum or social validation to qualify the opportunity.
+
+### Rule Types
+
+#### Boolean Rules (Checkboxes)
+
+Simple on/off rules that exclude or require certain conditions:
+
+- **Example**: "Exclude Honeypots" - Check the box to exclude honeypot tokens
+- **Dealbreaker**: Can be marked as dealbreaker when Flexible Matching is enabled
+
+#### Range Rules (Min/Max Inputs)
+
+Numeric rules where you set minimum and/or maximum values:
+
+- **Example**: "Liquidity ($)" - Set Min: $10,000 and/or Max: $1,000,000
+- **Validation**: Min must be less than Max, both must be positive numbers
+- **Dealbreaker**: Can be marked as dealbreaker when Flexible Matching is enabled
+
+#### Enum Rules (Dropdowns)
+
+Rules with predefined options:
+
+- **Example**: "Risk Level" - Select from: Any, CRITICAL, HIGH, MEDIUM, LOW
+- **Dealbreaker**: Can be marked as dealbreaker when Flexible Matching is enabled
+
+
+#### Information Tooltips
+
+- Hover over the **ℹ️** icon next to any rule to see a detailed description
+- This helps you understand what each rule checks
+
+#### Rule Validation
+
+- Range rules validate that Min < Max
+- All numeric values must be positive
+- Invalid configurations show error messages in red
+
+### Enabling Advanced Mode
+
+Rule Groups with MATCH ALL and MATCH ANY logic are the core feature of **Advanced Mode**. To use Rule Groups:
+
+1. Open the Strategy Editor
+2. Navigate to Step 3: Rules
+3. Check the **"Advanced mode"** checkbox in the header
+4. You'll now see the Rule Groups interface where you can create groups with AND/OR logic
+
+Advanced Mode allows you to:
+
+- Create custom rule groups with MATCH ALL (AND) and MATCH ANY (OR) logic
+- Configure multiple independent rule groups that must all pass
+- Fine-tune operators and values for precise control
+
+<Warning>
+Switching from Advanced to Basic Mode may result in data loss if you've used features not available in Basic Mode. Rule Groups will be converted to Basic Mode's Flexible Matching system.
+</Warning>
 
 <CardGroup cols={2}>
   <Card title="Deep Dive: Strategy Editor" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive">

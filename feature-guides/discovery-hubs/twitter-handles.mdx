@@ -1,0 +1,164 @@
+---
+title: "Twitter Handles"
+description: "Discover, manage, and organize high-signal authors with tags."
+---
+
+The quality of Twitter-based strategies depends on source quality. The Twitter Handles is your command center for discovering, managing, and organizing accounts you want to monitor.
+
+Instead of adding handles one-by-one inside the Strategy Editor, manage a central, reusable library here.
+
+<Frame caption="Twitter handles page">
+  <img src="/images/twitter-handles.png" alt="The Twitter handles page showing a list of Twitter handles in the main area with a sidebar displaying available tags. Handles are displayed with their Twitter username, status (Active/Inactive toggle), and assigned tags." />
+</Frame>
+
+## Core Features
+
+- **Centralized Management**: View all tracked authors and toggle Active/Inactive status
+- **Search & Filter**: Find authors instantly by username or filter by tags
+- **Tags**: Group authors for reusable, precise lists
+- **Bulk Operations**: Select multiple handles to add/remove tags or delete in bulk
+- **Import**: Import handles in bulk to your list
+
+## Understanding Tags
+
+Tags are labels you assign to Twitter handles to organize them into groups. When creating a strategy trigger, you select a tag to monitor all handles with that tag.
+
+**Why Tags Matter:**
+- **Reusability**: Create a tag once, use it across multiple strategies
+- **Organization**: Group handles by theme, risk level, or signal quality
+- **Flexibility**: A handle can have multiple tags
+- **Precision**: Target specific author groups for different strategies
+
+## Creating and Managing Tags
+
+### Creating a Tag
+
+1. Navigate to **Twitter Handles** from the sidebar
+2. Click **"Create Tag"** button (usually in the tags sidebar or header)
+3. Enter a tag name (e.g., `narrative-king`, `serious-alpha`, `degen-plays`)
+4. Optionally add a description
+5. Click **"Create"**
+
+### Assigning Tags to Handles
+
+**Single Handle:**
+1. Find the handle in the Twitter Handles list
+2. Click the **Edit** icon (pencil) next to the handle
+3. In the Edit Handle modal, check the tags you want to assign
+4. Click **"Save"**
+
+**Multiple Handles (Bulk):**
+1. Enable bulk selection mode
+2. Select multiple handles using checkboxes
+3. Click **"Bulk Actions"** → **"Set Tags"**
+4. Select the tags to apply to all selected handles
+5. Confirm the action
+
+<Frame caption="Twitter handles page">
+  <img src="/images/bulk-update-handles.png" alt="The Edit Handle modal showing a handle's current information with a section displaying available tags as checkboxes. Some tags are checked (assigned) and others are unchecked. The modal shows the handle's status (Active/Inactive) and allows editing the handle name" />
+</Frame>
+
+## Adding Twitter Handles
+
+### Adding a Single Handle
+
+1. In Twitter Handles, click **"Add Handle"** button
+2. Enter the Twitter username (with or without @)
+3. Select tags to assign (optional)
+4. Set status (Active/Inactive)
+5. Click **"Add"**
+
+### Importing Multiple Handles
+
+1. Click **"Import Handles"** button
+2. Paste a list of Twitter usernames (one per line, with or without @)
+3. Select tags to apply to all imported handles (optional)
+4. Review the import preview
+5. Click **"Import"** to confirm
+
+## Using Tags in Strategy Triggers
+
+Once you've organized handles with tags, you can use them in your strategies.
+
+### Step 1: Create a Strategy Trigger
+
+1. Navigate to **Create Strategy** or **Edit Strategy**
+2. Go to **Step 2: Triggers**
+3. Click **"Add Trigger"** if you don't have one yet
+4. Select the trigger type:
+   - **"Tweet Mentions Token"**: Monitors tweets from selected handles for token mentions
+   - **"AI Generated Token From Tweets"**: Uses AI to analyze tweets from selected handles to detect emerging narratives
+
+<Frame caption="Strategy tweet Triggers">
+  <img src="/images/tweet-triggers.png" alt="The Strategy Triggers step showing a trigger configuration." />
+
+</Frame>
+
+### Step 2: Select a Tag
+
+1. In the trigger configuration, find the **"Select Tag"** dropdown
+2. Choose from:
+   - **"All Handles"**: Monitor all handles in your Twitter Handles (shows total count)
+   - **Tag Name**: Select a specific tag to monitor only handles with that tag (shows handle count)
+3. The description below explains what will be monitored
+
+**Example:**
+- Select **"degen-plays"** tag → Strategy monitors tweets from all handles tagged as `degen-plays`
+- Select **"serious-alpha"** tag → Strategy monitors tweets from all handles tagged as `serious-alpha`
+- Select **"All Handles"** → Strategy monitors tweets from every handle in your Twitter Handles
+
+## Tags in Practice
+
+### Example Workflow: Creating Two Strategies
+
+**Scenario:** You want to create two different strategies:
+1. A "degen" strategy listening to high-risk meme accounts
+2. A "serious" strategy listening to respected devs/analysts
+
+**Step 1: Organize Handles with Tags**
+
+1. Go to **Twitter Handles**
+2. Create tags:
+   - `degen-plays` - for high-risk meme accounts
+   - `serious-alpha` - for respected developers and analysts
+3. Assign handles to appropriate tags:
+   - Add meme coin influencers to `degen-plays`
+   - Add technical analysts to `serious-alpha`
+
+**Step 2: Create the "Degen" Strategy**
+
+1. Create a new strategy
+2. In **Step 2: Triggers**, add trigger:
+   - Type: **"Tweet Mentions Token"**
+   - Tag: Select **"degen-plays"**
+3. Configure rules (Step 3) appropriate for high-risk tokens
+4. Save strategy
+
+**Step 3: Create the "Serious" Strategy**
+
+1. Create another strategy
+2. In **Step 2: Triggers**, add trigger:
+   - Type: **"Tweet Mentions Token"**
+   - Tag: Select **"serious-alpha"**
+3. Configure rules (Step 3) appropriate for more established tokens
+4. Save strategy
+
+**Result:**
+- Both strategies run independently
+- The "degen" strategy only monitors handles tagged `degen-plays`
+- The "serious" strategy only monitors handles tagged `serious-alpha`
+- You can add/remove handles from tags, and all strategies using those tags automatically update
+
+### AI Generated Token From Tweets
+
+Uses AI to analyze tweets from selected handles to detect emerging narratives and generate token signals.
+
+**Use Cases:**
+- Discovering tokens before they're explicitly mentioned
+- Finding tokens through narrative analysis
+- Catching trends as they emerge in discussions
+
+**How It Works:**
+1. AI analyzes tweets from handles in the selected tag
+2. Identifies possible token names that can be inspired from the tweets
+3. Identifies when such tokens are launched and triggers your strategy

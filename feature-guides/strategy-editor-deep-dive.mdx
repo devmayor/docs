@@ -6,14 +6,16 @@ description: "Build powerful strategies with a guided 4‑step wizard."
 The Strategy Editor turns your insights into an automated, 24/7 alpha‑hunting machine. It's a simple 4‑step wizard.
 
 #### Step 1: Details — Naming & Data Policy
-
+<Frame caption="Step 1 settings">
+  <img src="/images/details.png" alt="Strategy editor step 1" />
+</Frame>
 - Name your strategy clearly (e.g., "High‑Volume Breakout Screener").
 - Data Handling Policy:
   - **Data Strictness (ON)**: Wait for critical data; fail if missing (safest).
   - **Data Strictness (OFF)**: Proceed and skip missing data (degenerate mode—use with caution).
 
-<Frame caption="Step 1 settings">
-  <img src="/images/hero-dark.png" alt="Strategy editor step 1" />
+<Frame caption="Step 1 settings: Click the setting (Gear) icon">
+  <img src="/images/Strictness.png" alt="Strategy editor step 1 strictness" />
 </Frame>
 
 #### Step 2: Triggers — Defining "When"
@@ -22,19 +24,309 @@ Combine different trigger types. Example: "New Token Created" AND "A tweet menti
 
 #### Step 3: Rules — Defining "What"
 
-- Start with **Dealbreakers**.
-- Use **MATCH ALL** groups for core criteria.
-- Use **MATCH ANY** groups for flexible signals.
-- Leverage the **Rule Selector Drawer**: search, filter, and hover for definitions.
+Rules are the conditions that tokens must meet to generate an alert. Once a trigger fires, rules evaluate the token's properties, on-chain data, and social signals.
+
+<Frame caption="Rules evaluation interface">
+  <img src="/images/rules.png" alt="Rules interface showing Security, Market, Socials, and AI categories" />
+</Frame>
+
+
+#### Rule Categories
+
+Rules are organized into four categories, each focusing on different aspects of token evaluation:
+
+**Security**
+
+Security rules protect you from scams and risky tokens. These rules check for:
+
+- **Honeypots**: Tokens that prevent selling after purchase
+- **Rugged Tokens**: Tokens that have been previously scammed
+- **LP Locking**: Whether liquidity pools are locked
+- **Risk Levels**: Overall security risk assessment (CRITICAL, HIGH, MEDIUM, LOW)
+- **Token Mutability**: Whether token properties can be changed
+- **Creator History**: Whether the creator has a history of rug pulls
+- **Ownership Concentration**: Risk from single holders or top 10 holders
+- **Transfer Fees**: Additional fees on transactions
+- **Token Age**: How long the token has existed
+
+**Available Security Rules:**
+
+- Exclude Honeypots: Filters tokens that trap buyers
+- Require LP Locked: Ensures liquidity is locked
+- Exclude Rugged Tokens: Skips tokens with rug history
+- Exclude Tokens With Freeze Authority: Prevents frozen token attacks
+- Exclude Single Holder Dominance: Filters tokens with excessive single holder control 
+- Exclude Low LP Providers: Filters tokens with insufficient liquidity providers
+- Exclude Low Liquidity: Sets minimum liquidity thresholds
+- Exclude Creator Balance: Filters tokens where creator holds too much supply
+- Risk Count: Sets bounds on risk indicators (Min/Max)
+- Exclude Transfer Fee: Filters tokens with transfer fees
+- Exclude Mintable Tokens: Blocks tokens that can mint new supply
+- Risk Level: Categorizes tokens by risk assessment (dropdown: Any, CRITICAL, HIGH, MEDIUM, LOW)
+- LP Locked %: Requires specific percentage of liquidity locked (Min/Max)
+- Exclude High Ownership Concentration: Filters tokens with concentrated ownership
+- Exclude Creator Rug History: Skips tokens from creators with rug history
+- Exclude Mutable Metadata: Filters tokens with changeable metadata
+- Exclude Creator With Multiple Tokens: Filters creators who launched multiple tokens
+- Exclude Tokens With Lockers: Filters tokens that use lockers
+- Exclude Mutable Tokens: Filters tokens with changeable metadata or supply
+- Token Age: Filters by how long the token has existed (Min/Max)
+
+**Example Security Configuration:**
+
+- Exclude Honeypots ✓
+- Exclude Rugged Tokens ✓
+- Risk Level: Any (or select specific level)
+- Token Age: Min 60 minutes, Max 1440 minutes
+
+**Market**
+
+Market rules evaluate trading and economic metrics. These include:
+
+- **Liquidity**: Total dollar value available for trading
+- **Market Cap**: Total value of all tokens
+- **Trading Volume**: 24-hour trading activity
+- **Holder Count**: Number of unique wallet holders
+- **Transaction Metrics**: Buy/sell counts, transaction counts
+- **Taxes**: Buy and sell tax percentages
+- **Holder Distribution**: Top 10 holder percentage, dev wallet percentage
+- **Trading Activity**: KOLs, pro traders, snipers, insiders
+- **Platform Indicators**: Pump.fun tokens, bonding curve progress
+
+**Available Market Rules:**
+
+- Sell Tax %: Sets bounds on sell tax percentage (Min/Max)
+- Liquidity ($): Sets minimum liquidity in USD (Min/Max)
+- 24h Trading Volume ($): Sets bounds on 24-hour trading volume (Min/Max)
+- Number of Buys: Sets bounds on buy transaction count (Min/Max)
+- KOLs Count: Sets bounds on Key Opinion Leader count (Min/Max)
+- Pro Traders: Sets bounds on professional trader count (Min/Max)
+- Insiders %: Sets bounds on insider ownership percentage (Min/Max)
+- Developer Migrations %: Sets bounds on developer migration percentage (Min/Max)
+- Bonding Curve %: Sets bounds on bonding curve percentage (Min/Max)
+- Total Holders: Sets bounds on total holder count (Min/Max)
+- Dev Wallet %: Sets bounds on developer wallet percentage (Min/Max)
+- Buy Tax %: Sets bounds on buy tax percentage (Min/Max)
+- Market Cap ($): Sets bounds on market capitalization (Min/Max)
+- Transaction Count: Sets bounds on total transaction count (Min/Max)
+- Number of Sells: Sets bounds on sell transaction count (Min/Max)
+- Global Fees Paid (SOL): Sets bounds on fees paid in SOL (Min/Max)
+- Snipers %: Sets bounds on sniper percentage (Min/Max)
+- Bundle Transactions %: Sets bounds on bundle transaction percentage (Min/Max)
+- Developer Pairs Created %: Sets bounds on developer pairs created percentage (Min/Max)
+- Only Pump Tokens: Filters to only include pump tokens
+- Top 10 Holder %: Sets bounds on top 10 holder ownership percentage (Min/Max)
+- Exclude Top 10 High Ownership: Filters tokens with excessive top 10 holder concentration
+
+**Example Market Configuration:**
+
+- Liquidity ($): Min $10,000
+- Market Cap ($): Min $50,000, Max $1,000,000
+- 24h Trading Volume ($): Min $20,000
+- Sell Tax %: Max 10%
+- Total Holders: Min 100
+
+**Socials**
+
+Social rules verify community presence and engagement:
+
+- **Website**: Whether the token has a website
+- **Telegram**: Presence of Telegram channel
+- **Twitter/X**: Twitter account availability
+- **Social Presence**: At least one social media link required
+- **DEX Paid**: Whether DEX listing fees have been paid
+- **Coming Soon**: Website domain age, Twitter followers, CA mentions (future features)
+
+**Available Social Rules:**
+
+- Only Pump Live: Filters to only tokens listed on Pump.fun
+- Require Telegram: Requires token to have a Telegram channel
+- Require At Least One Social: Requires at least one social media presence
+- Require Website: Requires token to have a website
+- Require Twitter: Requires token to have a Twitter account
+- DEX Paid: Filters tokens that have paid for DEX listings
+
+**Example Social Configuration:**
+
+- Require Website ✓
+- Require Telegram ✓
+- Require Twitter ✓
+- Require At Least One Social ✓
+- DEX Paid ✓
+
+**AI**
+
+AI-powered rules use machine learning to evaluate token legitimacy:
+
+- **Website Content Validity Score**: How well website content matches token description (0-100)
+- **Twitter Account Validity Score**: Relevance of Twitter content to token (0-100)
+
+**Available AI Rules:**
+
+- Website Content Validity Score: AI assessment of website content legitimacy (Min/Max, 0-100)
+- Twitter Account Validity Score: AI assessment of Twitter account legitimacy (Min/Max, 0-100)
+
+<Info>
+AI features are marked as "Coming Soon" and will be available in future updates.
+</Info>
+
+#### Flexible Matching
+
+By default, your strategy requires tokens to meet **ALL** of your configured rules. Flexible Matching allows you to be more flexible by accepting tokens that meet a **percentage** of your criteria instead of requiring every single condition.
+
+**How to Enable Flexible Matching:**
+<Frame caption="Flexible Matching">
+  <img src="/images/flexible-matching.png" alt="Enable flexible matching" />
+</Frame>
+
+1. Locate the **"Flexible Matching"** card at the top of the Rules step
+2. Check the **"Enable"** checkbox in the top-right corner of the card
+3. The Match Threshold slider will become active
+
+**Match Threshold:**
+
+Once enabled, you can adjust the **Match Threshold** using the slider:
+
+<Frame caption="Adjusting Match Threshold slider">
+  <img src="/images/flexible-matching-working.gif" alt="Animation showing how to adjust the Match Threshold slider in Flexible Matching" />
+</Frame>
+
+- **Range**: 0% to 100%
+- **Default**: 80%
+- **How it works**: 
+  - Set to **100%**: Tokens must meet ALL rules (same as disabled)
+  - Set to **80%**: Tokens must meet at least 80% of your rules
+  - Set to **50%**: Tokens must meet at least half of your rules
+  - Set to **0%**: Any token will match (not recommended)
+
+**Example:**
+
+If you have 10 rules configured and set Match Threshold to 80%:
+
+- A token needs to pass at least 8 out of 10 rules to match your strategy
+- This allows for tokens that are mostly good but might fail one or two non-critical conditions
+
+#### Dealbreakers
+
+Dealbreakers are rules that **must always be met**, regardless of your Match Threshold setting. When Flexible Matching is enabled, you can mark specific rules as dealbreakers to ensure certain critical conditions are never bypassed.
+
+**How to Mark a Rule as a Dealbreaker:**
+
+1. **Enable Flexible Matching** first (dealbreaker switches only appear when Flexible Matching is on)
+2. For each rule you want to make mandatory, toggle the **dealbreaker switch** (appears to the left of the rule name)
+3. When a rule is marked as a dealbreaker:
+   - It shows as enabled (switch is on)
+   - The rule will **always** be required, even if Match Threshold is set below 100%
+   - It is not counted in the percentage calculation for other rules
+
+**When to Use Dealbreakers:**
+
+Use dealbreakers for **critical safety rules** that should never be compromised:
+
+**Good Dealbreaker Candidates:**
+
+- ✅ Exclude Honeypots
+- ✅ Exclude Rugged Tokens
+- ✅ Exclude Tokens With Freeze Authority
+- ✅ Risk Level: Not CRITICAL or HIGH
+- ✅ Exclude Creator Rug History
+
+**Rules That Can Be Flexible:**
+
+- Market Cap ranges (can vary)
+- Trading volume (fluctuates)
+- Social media presence (nice to have, not critical)
+- Holder counts (can grow over time)
+
+**How Dealbreakers Work with Match Threshold:**
+
+**Example Scenario:**
+
+- You have 10 total rules configured
+- 3 rules are marked as dealbreakers (Exclude Honeypots, Exclude Rugged Tokens, Risk Level)
+- Match Threshold is set to 70%
+
+**How it works:**
+
+1. **First**: All 3 dealbreakers must pass (100% required)
+2. **Then**: From the remaining 7 non-dealbreaker rules, at least 70% must pass (5 out of 7 rules)
+3. **Result**: Token must pass all 3 dealbreakers + at least 5 of the 7 flexible rules
+
+This ensures critical safety while allowing flexibility on less important criteria.
+
+##### Using the Interface
+
+**Category Tabs:**
+
+- Click any category tab (Security, Market, Socials, AI) to view rules in that category
+- Each tab shows a **badge count** indicating how many rules you've configured in that category
+- The active tab is highlighted in blue
+
+**Configuring Rules:**
+
+1. **Boolean Rules**: Simply check the checkbox to enable the rule
+2. **Range Rules**: Enter values in the Min and/or Max fields
+3. **Enum Rules**: Select a value from the dropdown (default is "Any")
+
+**Clearing Rules:**
+
+- Click the **"Clear"** button in the top-right of any category tab to remove all configured rules in that category
+- This only clears the current category, not all categories
+
+**Information Tooltips:**
+
+- Hover over the **ℹ️** icon next to any rule to see a detailed description
+- This helps you understand what each rule checks
+
+**Rule Validation:**
+
+- Range rules validate that Min < Max
+- All numeric values must be positive
+- Invalid configurations show error messages in red
 
 <Tip>
 Hover a rule to read its definition and impact before adding.
 </Tip>
 
+#### Best Practices
+
+**Starting Out:**
+
+1. **Begin with Security rules**: Protect yourself first
+2. **Add Market rules**: Set reasonable liquidity and volume thresholds
+3. **Include Social rules**: Ensure tokens have community presence
+4. **Review and refine**: Test your strategy and adjust based on results
+
+**Using Flexible Matching:**
+
+- **Start conservative**: Use 80-90% Match Threshold initially
+- **Mark critical rules as dealbreakers**: Never compromise on safety
+- **Lower threshold gradually**: If you're missing good opportunities, lower to 70-75%
+- **Monitor results**: Track which rules are failing most often
+
+**Rule Selection Tips:**
+
+- **Security**: Always exclude honeypots and rugged tokens (make these dealbreakers)
+- **Market**: Set minimum liquidity ($10K+) and reasonable market cap ranges
+- **Socials**: Require at least one social media presence
+- **Balance**: Don't set too many restrictive rules, or you'll miss opportunities
+
+**Advanced Mode:**
+
+If you need more control, you can switch to **Advanced Mode** using the checkbox in the header. Advanced Mode allows you to:
+
+- Create custom rule groups with AND/OR logic
+- Configure more complex rule combinations
+- Fine-tune operators and values
+
+<Warning>
+Switching from Advanced to Basic Mode may result in data loss if you've used features not available in Basic Mode.
+</Warning>
+
 #### Step 4: Review — Confirm and Activate
 
 Confirm Triggers and Rules. Save, optionally activate immediately. Your engine goes live.
 
-<Card title="Explore Discovery Hubs" icon="compass" href="/feature-guides/discovery-hubs/author-hub" />
+<Card title="Explore Twitter Handles" icon="compass" href="/feature-guides/discovery-hubs/twitter-handles" />
 
 

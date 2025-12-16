@@ -10,23 +10,34 @@ It's essential to understand the difference between a Trigger and a Rule.
 A Trigger is the event that says: wake up and analyze now. Your strategy runs only when an event matches one of your triggers.
 
 - **Event-driven:**
-  - A New Token is Created
-  - A Tweet Mentions a Token
-  - A Followed Dev Deploys a New Token
-  - ![Alt text describing the image](images/image(11).png)
+  - Newly created tokens: A New Token is Created
+  - Almost graduated tokens: Tokens has gone past the newly created stage and heading for graduation
+  - Graduated tokens: Token has finally graduated 
+  - Tweet mentions token: A Tweet Mentions a Token either by CA or token name
+  - Ai generated tokens from tweets: These are possible token names that are generated from tweets and are found to be newly created. e.g Elon tweets about colony on mars. The Ai will predict and created likely tokens names fromt his tweets like `Mars` or `Mars doge` and when new launches are created with this likeness, they will trigger your rules to evaluate
+  - Newly created token from followed dev: When a developer you follow launches a new token
 
-- **State-driven:**
-  - A Token Matches a Screener (e.g., 7 days old and crosses $1M market cap)
+<img src="/images/triggers.png" alt="triggers" />
 
 A strategy can have multiple triggers. It runs if ANY of them fire.
 
 #### Rules: The "What"
 
-Rules are the conditions that must be true about the token when analysis runs. See Dealbreakers and Rule Groups for structure and logic.
+Rules are the conditions that must be true about the token when analysis runs. Once a trigger fires, rules evaluate the token's properties, on-chain data, and social signals to determine if it matches your criteria.
+
+Rules are evaluated in two stages: **Dealbreakers** first (non-negotiable safety checks), then **Rule Groups** (flexible combinations with AND/OR logic). A token must pass all Dealbreakers and satisfy your Rule Groups to generate an alert.
+
+Rules are organized into four categories:
+
+- **Security**: Protect against scams and risky tokens (honeypots, rug pulls, LP locking, etc.)
+- **Market**: Evaluate trading metrics (liquidity, volume, market cap, holder distribution, etc.)
+- **Socials**: Verify community presence (website, Telegram, Twitter, DEX listings, etc.)
+- **AI**: Machine learning assessments of token legitimacy (coming soon)
 
 <CardGroup cols={2}>
   <Card title="Dealbreakers" icon="shield" href="/core-concepts/dealbreakers" />
   <Card title="Rule Groups (AND/OR)" icon="brackets-curly" href="/core-concepts/rule-groups" />
+  <Card title="Strategy Editor Guide" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive" />
 </CardGroup>
 
 

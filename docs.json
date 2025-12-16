@@ -38,9 +38,8 @@
             "group": "Feature Guides",
             "pages": [
               "feature-guides/strategy-editor-deep-dive",
-              "feature-guides/discovery-hubs/author-hub",
-              "feature-guides/discovery-hubs/intelligence-hubs",
-              "feature-guides/advanced-alerting/screener"
+              "feature-guides/discovery-hubs/twitter-handles",
+              "feature-guides/discovery-hubs/dev-tracking"
             ]
           },
           {
@@ -93,8 +92,8 @@
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/memeperfect",
-      "github": "https://github.com/memeperfect"
+      "x": "https://x.com/thememeperfect",
+      "discord": "https://discord.gg/kj9h5QbCsu"
     }
   }
 }
