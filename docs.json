@@ -22,7 +22,9 @@
           {
             "group": "Getting Started",
             "pages": [
-              "quickstart"
+              "quickstart",
+              "getting-started/app-overview",
+              "getting-started/templates"
             ]
           },
           {
@@ -30,8 +32,7 @@
             "pages": [
               "core-concepts/what-is-a-strategy",
               "core-concepts/triggers-vs-rules",
-              "core-concepts/dealbreakers",
-              "core-concepts/rule-groups"
+              "core-concepts/dealbreakers"
             ]
           },
           {
@@ -39,13 +40,28 @@
             "pages": [
               "feature-guides/strategy-editor-deep-dive",
               "feature-guides/discovery-hubs/twitter-handles",
-              "feature-guides/discovery-hubs/dev-tracking"
+              "feature-guides/discovery-hubs/dev-tracking",
+              "feature-guides/alerts-and-notifications",
+              "feature-guides/strategy-performance",
+              "feature-guides/backtests"
             ]
           },
           {
-            "group": "AI Engine",
+            "group": "Strategy Deep Dives",
             "pages": [
-              "ai-engine/narrative-engine"
+              "strategy-deep-dives/tweet-mentions-token",
+              "strategy-deep-dives/tweet-metadata-match",
+              "strategy-deep-dives/followed-dev-launches"
+            ]
+          },
+          {
+            "group": "Developers",
+            "pages": [
+              "developers/apis",
+              "developers/api-walkthrough",
+              "developers/strategy-rules",
+              "developers/webhooks",
+              "developers/ai-agent"
             ]
           },
           {

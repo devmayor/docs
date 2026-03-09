@@ -1,0 +1,92 @@
+---
+title: "Followed Dev Launches"
+description: "How to build strategies around new tokens launched by developers you follow."
+---
+
+Use this Trigger when your strategy should run based on the developer behind the launch.
+
+## In the Strategy Editor
+
+When you add this Trigger in **Step 2: Triggers**, the event type is:
+
+- **Event Type**: `Newly Created Token From Followed Dev`
+
+This Trigger uses the developer list you maintain in **Dev Tracking**.
+
+Depending on your setup, you can use:
+
+- all followed developers
+- a subset of developers grouped by tag
+- a specific wallet or developer target
+
+## What it does
+
+This Trigger runs when a followed developer launches a new token.
+
+It is a creator-based source, not a broad market discovery source.
+
+## Source selection: All followed devs vs subsets
+
+### All followed devs
+
+Use this when your followed dev list is already small and high quality.
+
+### Tagged or specific dev selections
+
+Use a subset when you want different strategy logic for different developer groups.
+
+Examples:
+
+- trusted devs
+- experimental devs
+- ecosystem-specific devs
+
+This gives you more control than forcing one ruleset across every followed wallet.
+
+### Example: trusted devs vs experimental devs
+
+In **Dev Tracking**, you can organize followed developers into groups such as:
+
+- `trusted-devs`
+- `experimental-devs`
+- `pump-native-devs`
+
+Then you can build separate strategies around those groups.
+
+For example:
+
+- Strategy 1 uses the `trusted-devs` group with slightly looser Rules because the developer selection is already strong.
+- Strategy 2 uses the `experimental-devs` group with much stricter Rules for liquidity, ownership, and socials.
+
+This gives you cleaner signal separation than putting every followed developer into one trigger source.
+
+## Why this improves strategy quality
+
+Segmenting developers improves your strategy because you can:
+
+- separate high-conviction devs from experimental ones
+- give riskier dev groups stricter Rules
+- test one developer segment without affecting the others
+- reuse the same dev groups across multiple strategies
+
+## Best way to use this Trigger
+
+Use the Trigger to decide **whose launches matter**.
+
+Use Rules to decide **which of those launches are still good enough**.
+
+Example:
+
+- Trigger on a `trusted-devs` group
+- Then require liquidity, ownership checks, socials, and security filters
+
+That keeps the strategy clear: source selection first, token filtering second.
+
+## When to use it
+
+Choose **Newly Created Token From Followed Dev** when your edge comes from developer selection and launch history, not from broad launch scanning or tweet activity.
+
+<CardGroup cols={2}>
+  <Card title="Dev Tracking" icon="radar" href="/feature-guides/discovery-hubs/dev-tracking" />
+  <Card title="Trigger Glossary" icon="bolt" href="/reference/trigger-glossary" />
+</CardGroup>

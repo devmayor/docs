@@ -1,29 +1,52 @@
 ---
 title: "Core Concepts: What is a Strategy?"
-description: "Understand how Triggers and Rules combine to produce actionable alerts."
+description: "Understand how Triggers and Rules produce alerts."
 ---
 
-At its heart, MemePerfect constantly asks: "Does this token match my criteria?" A Strategy is your answer. It's the set of instructions that defines what opportunities you want to find.
+A Strategy is the logic that tells MemePerfect what to watch and what to ignore. It is the core unit of automation in the product.
 
-Every strategy is built from two building blocks: **Triggers** and **Rules**.
+Every Strategy is built from two parts: **Triggers** and **Rules**.
 
-`Trigger (When to look) + Rules (What to look for) = Action (Alert)`
+`Trigger (when to evaluate) + Rules (what must be true) = Alert`
 
-<Frame caption="Funnel: Triggers → Rules → Alert">
-<img src="/images/strategy-flow.png" alt="Funnel: Triggers → Rules → Alert" />
+<Frame caption="A Strategy moves from Trigger to Rules before an alert is sent.">
+  <img src="/images/strategy-flow.png" alt="Funnel from Triggers to Rules to Alert" />
 </Frame>
 
+## Trigger
+
+A **Trigger** tells the system when to start evaluating a token.
+
+Examples:
+
+- A new token is created.
+- A tracked author mentions a token.
+- A followed developer launches a token.
+
+## Rules
+
+**Rules** tell the system what must be true once evaluation starts. They check security, market data, social presence, and AI-based signals.
+
+If the token meets your configured conditions, the Strategy sends an alert.
+
+## Why this matters
+
+Most strategy problems come from one of two places:
+
+- the wrong **Trigger**, which means evaluation starts at the wrong moment
+- the wrong **Rules**, which means the filter is too loose or too strict
+
 <CardGroup cols={2}>
-  <Card title="Triggers" icon="bolt" href="/core-concepts/triggers-vs-rules">
-    Define when the engine should wake up and analyze.
+  <Card title="Triggers vs. Rules" icon="bolt" href="/core-concepts/triggers-vs-rules">
+    Learn the difference between the two parts of a Strategy.
   </Card>
-  <Card title="Rules" icon="list-check" href="/core-concepts/rule-groups">
-    Define what must be true for an alert to fire.
+  <Card title="Rules" icon="list-check" href="/feature-guides/strategy-editor-deep-dive">
+    Learn how Rules are organized and evaluated.
   </Card>
 </CardGroup>
 
 <Tip>
-Master this mental model. Most strategy issues are either the wrong Trigger (timing) or the wrong Rules (quality).
+Keep this model in mind while reading the rest of the docs. Almost every feature builds on it.
 </Tip>
 
 

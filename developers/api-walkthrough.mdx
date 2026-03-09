@@ -1,0 +1,353 @@
+---
+title: "API Walkthrough"
+description: "End-to-end example: create, manage, observe, and integrate a strategy through the external API."
+---
+
+This page is a practical workflow for engineers who want to use the API from zero to production-style integration.
+
+Scenario:
+
+- You want to create a Strategy programmatically.
+- The Strategy should focus on safe new launches with minimum liquidity and social proof.
+- You want to activate it, observe notifications, track performance, and receive webhook events.
+
+## Prerequisites
+
+Set your environment variables:
+
+```bash
+export MP_BASE_URL="https://api.memeperfect.io/api/external/v1"
+export MP_API_KEY="mpk_your_api_key_here"
+```
+
+Common header:
+
+```bash
+-H "X-API-Key: $MP_API_KEY"
+```
+
+## Step 1: Confirm plan and limits
+
+```bash
+curl -s "$MP_BASE_URL/me" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Use this to confirm:
+
+- your plan (`PRO` or `DEGEN`)
+- strategy activation limit
+- requests-per-minute limit
+
+## Step 2: Create a strategy
+
+This example strategy:
+
+- triggers on newly created tokens
+- enforces safety dealbreakers
+- applies market and social filters
+- uses four UI-compatible rule groups
+- sets `alertCooldownMins` to suppress duplicate alerts per token
+
+```bash
+curl -s -X POST "$MP_BASE_URL/strategies" \
+  -H "X-API-Key: $MP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "API Safe Launch Flow",
+    "description": "Programmatic strategy for safer early launches",
+    "strict": true,
+    "alertCooldownMins": 30,
+    "triggers": [
+      {
+        "id": "trigger-new-token",
+        "eventType": "new_token_created",
+        "enabled": true
+      }
+    ],
+    "dealbreakers": [
+      {
+        "id": "db-honeypot",
+        "ruleType": "is_honeypot",
+        "operator": "is",
+        "value": false,
+        "enabled": true
+      },
+      {
+        "id": "db-freeze",
+        "ruleType": "has_freeze_authority",
+        "operator": "is",
+        "value": false,
+        "enabled": true
+      }
+    ],
+    "ruleGroups": [
+      {
+        "id": "security",
+        "name": "Security",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "r-risk",
+            "ruleType": "risk_level",
+            "operator": "not_equals",
+            "value": "CRITICAL",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "market",
+        "name": "Market",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "r-liquidity-min",
+            "ruleType": "liquidity_usd",
+            "operator": "greater_than",
+            "value": 10000,
+            "enabled": true
+          },
+          {
+            "id": "r-mcap-max",
+            "ruleType": "market_cap",
+            "operator": "less_than",
+            "value": 1500000,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "socials",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "r-website",
+            "ruleType": "has_website",
+            "operator": "is",
+            "value": true,
+            "enabled": true
+          },
+          {
+            "id": "r-twitter",
+            "ruleType": "has_twitter",
+            "operator": "is",
+            "value": true,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "ai",
+        "name": "AI",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "r-ai-min",
+            "ruleType": "website_content_validation_score",
+            "operator": "greater_than",
+            "value": 50,
+            "enabled": true
+          },
+          {
+            "id": "r-ai-max",
+            "ruleType": "website_content_validation_score",
+            "operator": "less_than",
+            "value": 100,
+            "enabled": true
+          }
+        ]
+      }
+    ],
+    "matching": {
+      "enabled": true,
+      "minPercent": 80
+    },
+    "isActive": false
+  }'
+```
+
+Save `strategy.id` from the response for the next steps.
+
+## Step 3: Activate the strategy
+
+```bash
+export MP_STRATEGY_ID="your-strategy-uuid"
+
+curl -s -X POST "$MP_BASE_URL/strategies/$MP_STRATEGY_ID/activate" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+## Step 4: Verify strategy state
+
+```bash
+curl -s "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Check:
+
+- `isActive` is `true`
+- `alertCooldownMins` is present
+- group IDs and names are still `security/market/socials/ai` + `Security/Market/Socials/AI`
+
+## Step 5: Update strategy rules
+
+Example update:
+
+- increase liquidity threshold
+- tighten cooldown window
+
+```bash
+curl -s -X PATCH "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "alertCooldownMins": 45,
+    "ruleGroups": [
+      {
+        "id": "security",
+        "name": "Security",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "r-risk",
+            "ruleType": "risk_level",
+            "operator": "not_equals",
+            "value": "CRITICAL",
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "market",
+        "name": "Market",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "r-liquidity-min",
+            "ruleType": "liquidity_usd",
+            "operator": "greater_than",
+            "value": 15000,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "socials",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "ai",
+        "name": "AI",
+        "logic": "AND",
+        "rules": []
+      }
+    ]
+  }'
+```
+
+## Step 6: Read notifications programmatically
+
+List recent notifications:
+
+```bash
+curl -s "$MP_BASE_URL/notifications?page=1&limit=20&strategyId=$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Read one notification in detail:
+
+```bash
+export MP_NOTIFICATION_ID="your-notification-uuid"
+
+curl -s "$MP_BASE_URL/notifications/$MP_NOTIFICATION_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+## Step 7: Check performance
+
+Synchronous summary:
+
+```bash
+curl -s "$MP_BASE_URL/notifications/performance?range=daily&strategyId=$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Asynchronous flow for larger workloads:
+
+```bash
+curl -s -X POST "$MP_BASE_URL/notifications/performance/jobs?range=daily&strategyId=$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Then poll:
+
+```bash
+export MP_JOB_ID="job-id-from-previous-response"
+
+curl -s "$MP_BASE_URL/notifications/performance/jobs/$MP_JOB_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+## Step 8: Configure webhook delivery
+
+Check current config:
+
+```bash
+curl -s "$MP_BASE_URL/webhook" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Set webhook endpoint:
+
+```bash
+curl -s -X PUT "$MP_BASE_URL/webhook" \
+  -H "X-API-Key: $MP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enabled": true,
+    "url": "https://your-domain.com/memeperfect/webhook"
+  }'
+```
+
+Use returned fields:
+
+- `hasSecret`
+- `secret` (when generated/rotated)
+- `verifiedAt`
+- `verificationError` (if verification failed)
+
+## Step 9: Deactivate strategy
+
+```bash
+curl -s -X POST "$MP_BASE_URL/strategies/$MP_STRATEGY_ID/deactivate" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+## Step 10: Optional cleanup
+
+```bash
+curl -s -X DELETE "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+## Practical implementation checklist
+
+- Keep API key server-side only.
+- Persist strategy IDs in your own DB.
+- Use idempotent update logic in your integration.
+- Handle `429` throttling with retry/backoff.
+- Validate rule payloads with the [Strategy Rules Spec](/developers/strategy-rules) before sending.
+
+<CardGroup cols={2}>
+  <Card title="APIs" icon="code" href="/developers/apis">
+    Full endpoint reference and payload examples.
+  </Card>
+  <Card title="Strategy Rules Spec" icon="list-check" href="/developers/strategy-rules">
+    Rule schema, operators, and supported rule types.
+  </Card>
+</CardGroup>

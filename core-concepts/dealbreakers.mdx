@@ -1,13 +1,15 @@
 ---
 title: "Understanding Dealbreakers"
-description: "Your non-negotiable safety net. If one fails, no alert."
+description: "Learn which checks always run first and why they matter."
 ---
 
-After a trigger fires, the engine checks your Dealbreakers first.
+Dealbreakers are conditions that must pass before the rest of your Rules are considered. They are your non-negotiable filters.
 
-A Dealbreaker is a condition that must be 100% true. If any fail, evaluation stops immediately and no alert is sent.
+If any Dealbreaker fails, MemePerfect stops evaluation and does not send an alert.
 
-Think of them as the bouncer at the door. If standards aren't met, it's not getting in.
+## What makes a good Dealbreaker
+
+Use Dealbreakers for conditions that should never be optional, such as:
 
 #### Common use
 
@@ -15,12 +17,16 @@ Think of them as the bouncer at the door. If standards aren't met, it's not gett
 - Sell Tax (%) is less than 25
 - Has Minting Authority is False
 
-<Frame caption="Flow: Dealbreakers first">
+<Frame caption="Dealbreakers are checked before the rest of your Rules.">
   <img src="/images/dealbreakers.png" alt="List of dealbreakers in a strategy" />
 </Frame>
 
+## When to use them
+
+Start with Dealbreakers when you build a Strategy. They remove obvious bad candidates early and keep the rest of your logic focused on better setups.
+
 <Tip>
-Start every strategy by defining Dealbreakers. They're your fastest path to fewer false positives.
+If failing a condition should always disqualify a token, make it a Dealbreaker instead of a normal Rule.
 </Tip>
 
 

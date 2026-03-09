@@ -1,0 +1,194 @@
+---
+title: "Webhooks"
+description: "Send MemePerfect strategy events directly into your own systems."
+---
+
+Use this page to implement webhook delivery end to end: configure endpoint, pass verification, verify signatures, and process strategy notifications.
+
+## What webhooks do
+
+MemePerfect sends `POST` requests to your endpoint when configured events occur.
+
+You can use this to:
+
+- trigger your own bot or worker
+- pipe alerts into internal systems
+- react programmatically without polling
+
+## Endpoints to configure webhook
+
+- `GET /webhook` to read current configuration
+- `PUT /webhook` to enable/disable and set URL
+
+See full auth and base URL details in [APIs](/developers/apis).
+
+## 1) Read webhook config
+
+```bash
+curl -s "https://api.memeperfect.io/api/external/v1/webhook" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+Example response:
+
+```json
+{
+  "enabled": false,
+  "hasSecret": false
+}
+```
+
+## 2) Enable webhook and set URL
+
+```bash
+curl -s -X PUT "https://api.memeperfect.io/api/external/v1/webhook" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enabled": true,
+    "url": "https://your-domain.com/memeperfect/webhook"
+  }'
+```
+
+Example response:
+
+```json
+{
+  "enabled": true,
+  "url": "https://your-domain.com/memeperfect/webhook",
+  "verifiedAt": "2026-03-09T10:12:11.145Z",
+  "hasSecret": true,
+  "secret": "RANDOM_SECRET_SHOWN_ON_GENERATION_ONLY",
+  "verificationError": null
+}
+```
+
+Save `secret` securely. It may only be shown when generated/rotated.
+
+## Verification handshake
+
+When your URL is added or changed, MemePerfect sends:
+
+- event type: `webhook.endpoint_verification`
+- body includes `data.challenge`
+
+Your endpoint must:
+
+1. return `2xx`
+2. return JSON with the same `challenge` value
+
+Example verification payload:
+
+```json
+{
+  "id": "evt_2d21a9f2-2f41-49c4-8924-19622c76b1fa",
+  "type": "webhook.endpoint_verification",
+  "created_at": "2026-03-09T10:12:10.983Z",
+  "data": {
+    "challenge": "4f5d2a..."
+  }
+}
+```
+
+Example verification response from your endpoint:
+
+```json
+{
+  "challenge": "4f5d2a..."
+}
+```
+
+## Notification event payload
+
+When a Strategy match is dispatched, MemePerfect sends `notification.dispatched`.
+
+Example payload:
+
+```json
+{
+  "id": "evt_7983e267-d8f4-4477-89c9-8d0f748f7d49",
+  "type": "notification.dispatched",
+  "created_at": "2026-03-09T11:20:42.571Z",
+  "data": {
+    "notification_id": "8bb3f32d-5f46-4b5f-8b1b-9f6d11b8f845",
+    "strategy": {
+      "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+      "name": "API Safe Launch Flow"
+    },
+    "trigger": {
+      "event_type": "new_token_created",
+      "correlation_id": "corr_abc123",
+      "timestamp": "2026-03-09T11:20:41.905Z"
+    },
+    "token": {
+      "address": "8sJj...abc",
+      "name": "Example Token",
+      "symbol": "EXMPL",
+      "chain_id": 1399811149,
+      "price_usd": 0.00042,
+      "market_cap_usd": 153000,
+      "liquidity_usd": 24000
+    }
+  }
+}
+```
+
+## Webhook headers and signature
+
+Each delivery includes:
+
+- `X-MP-Webhook-Id`
+- `X-MP-Event-Id`
+- `X-MP-Event-Type`
+- `X-MP-Timestamp`
+- `X-MP-Signature`
+
+Signature format:
+
+```text
+v1=<hex(hmac_sha256(secret, timestamp + "." + raw_body))>
+```
+
+Use the raw request body exactly as received. Do not re-serialize JSON before verification.
+
+## Node.js signature verification example
+
+```ts
+import crypto from "crypto";
+
+export function verifyMpSignature(params: {
+  secret: string;
+  timestamp: string;
+  signature: string;
+  rawBody: string;
+}): boolean {
+  const { secret, timestamp, signature, rawBody } = params;
+  if (!signature?.startsWith("v1=")) return false;
+
+  const payload = `${timestamp}.${rawBody}`;
+  const expected = `v1=${crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("hex")}`;
+
+  const a = Buffer.from(signature);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+```
+
+## Operational notes
+
+- Webhook delivery is best-effort and does not block notification processing.
+- If URL changes, verification runs again and `verifiedAt` resets until success.
+- Setting `url` to `null` clears URL, secret, and verification state.
+
+<CardGroup cols={2}>
+  <Card title="APIs" icon="code" href="/developers/apis">
+    Full endpoint reference for strategies, notifications, performance, and webhook config.
+  </Card>
+  <Card title="API Walkthrough" icon="route" href="/developers/api-walkthrough">
+    End-to-end integration example from create to webhook consumption.
+  </Card>
+</CardGroup>

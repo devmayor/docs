@@ -1,0 +1,91 @@
+---
+title: "AI Agent"
+description: "Use MemePerfect as the evaluation layer for autonomous memecoin agents."
+---
+
+The core idea is simple:
+
+**agents should not have to watch the market themselves.**
+
+MemePerfect already provides the infrastructure needed to act as the continuous evaluation layer.
+
+<Frame caption="Placeholder: AI agent architecture powered by MemePerfect as the evaluation layer.">
+  <img src="/images/strategy-flow.png" alt="Placeholder illustration for AI agent product direction" />
+</Frame>
+
+## The direction
+
+Autonomous systems are good at deciding what to do next.
+
+They are usually not good at:
+
+- continuous market scanning
+- strategy state management
+- reliable long-running monitoring
+- delivering clean triggers at the right time
+
+That is the layer MemePerfect already covers.
+
+## What becomes possible
+
+Developers can use MemePerfect as the part of the stack that:
+
+- observes the market continuously
+- evaluates conditions across strategies
+- emits clear trigger events
+- passes qualified opportunities into agents
+
+In that model:
+
+- MemePerfect handles **observe + evaluate + trigger**
+- your agent handles **act + learn**
+
+## Example workflow
+
+Imagine an agent that only trades when a strategy passes strict conditions.
+
+The flow would look like this:
+
+1. The strategy runs continuously inside MemePerfect.
+2. MemePerfect detects a match.
+3. A webhook or API event is sent to your agent.
+4. The agent decides whether to buy, ignore, wait, or gather more context.
+
+This is powerful because it lets the agent focus on decision-making instead of raw market monitoring.
+
+## Why this matters
+
+This turns MemePerfect into more than a dashboard.
+
+It becomes infrastructure developers can build on top of:
+
+- for bots
+- for trading systems
+- for research pipelines
+- for autonomous memecoin agents
+
+## Today
+
+The building blocks are already here:
+
+- strategies
+- continuous evaluation
+- APIs
+- webhook delivery
+
+That means developers can already use MemePerfect as:
+
+- the sensing layer
+- the evaluation layer
+- the trigger layer
+
+while their own agents handle:
+
+- decision-making
+- execution
+- feedback loops
+
+<CardGroup cols={2}>
+  <Card title="APIs" icon="code" href="/developers/apis" />
+  <Card title="Webhooks" icon="bolt" href="/developers/webhooks" />
+</CardGroup>

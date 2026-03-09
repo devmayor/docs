@@ -47,24 +47,20 @@ Use this as a dictionary for Strategy Editor rule types.
   - Type: Boolean (True/False)
   - Operators: is
 
-- **Exclude Creator Balance**
+- **Exclude Creator Still Holding Balance**
   - Description: Indicates if the creator still holds tokens.
   - Type: Boolean (True/False)
   - Operators: is
 
-- **Risk Count**
-  - Description: Number of risks detected for the token.
-  - Type: Number
-  - Operators: greater than, less than
 
 - **Risk Level**
-  - Description: Risk level classification: CRITICAL, HIGH, MEDIUM, LOW.
-  - Type: String (CRITICAL, HIGH, MEDIUM, LOW)
+  - Description: Risk classification for the token.
+  - Type: String (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`)
   - Operators: equals, does not equal
 
 - **LP Locked %**
-  - Description: Percentage of liquidity pool that is locked.
-  - Type: Percentage (%)
+  - Description: Percentage of liquidity that is locked.
+  - Type: Percentage
   - Operators: greater than, less than
 
 - **Exclude High Ownership Concentration**
@@ -97,64 +93,64 @@ Use this as a dictionary for Strategy Editor rule types.
   - Type: Boolean (True/False)
   - Operators: is
 
-- **Exclude Transfer Fee**
+- **Exclude Tokens With Transfer Fee**
   - Description: Indicates if the token has a transfer fee.
   - Type: Boolean (True/False)
   - Operators: is
 
 - **Token Age**
-  - Description: Age of the token in minutes (computed from creation time).
-  - Type: Number (minutes)
+  - Description: Age of the token in minutes since creation.
+  - Type: Number
   - Operators: greater than, less than
 
 ## Market
 
 - **Sell Tax %**
-  - Description: The percentage fee charged when selling tokens. High sell taxes can trap investors.
-  - Type: Percentage (%)
+  - Description: Sell tax charged by the token.
+  - Type: Percentage
   - Operators: greater than, less than
 
 - **Buy Tax %**
-  - Description: The percentage fee charged when buying tokens. Affects entry cost for investors.
-  - Type: Percentage (%)
+  - Description: Buy tax charged by the token.
+  - Type: Percentage
   - Operators: greater than, less than
 
 - **Liquidity ($)**
-  - Description: The total dollar value of tokens available for trading in liquidity pools. Higher liquidity means less price slippage.
-  - Type: Number (USD)
+  - Description: Dollar value available in liquidity pools.
+  - Type: Number
   - Operators: greater than, less than
 
 - **Market Cap ($)**
-  - Description: The total value of all tokens in circulation. Calculated as token price × total supply.
-  - Type: Number (USD)
+  - Description: Token price multiplied by circulating supply.
+  - Type: Number
   - Operators: greater than, less than
 
 - **24h Trading Volume ($)**
-  - Description: The total dollar value of tokens traded in the last 24 hours. Higher volume indicates more active trading.
-  - Type: Number (USD)
+  - Description: Dollar value traded in the last 24 hours.
+  - Type: Number
   - Operators: greater than, less than
 
 - **Transaction Count**
-  - Description: Total number of transactions for the token.
+  - Description: Total transaction count for the token.
   - Type: Number
   - Operators: greater than, less than
 
 - **Number of Buys**
-  - Description: Total number of buy transactions.
+  - Description: Number of buy transactions.
   - Type: Number
   - Operators: greater than, less than
 
 - **Number of Sells**
-  - Description: Total number of sell transactions.
+  - Description: Number of sell transactions.
   - Type: Number
   - Operators: greater than, less than
 
 - **Total Holders**
-  - Description: The total number of unique wallet addresses holding the token. More holders can indicate better distribution.
+  - Description: Number of unique wallets holding the token.
   - Type: Number
   - Operators: greater than, less than
 
-- **Top 10 Holder %**
+- **Top 10 Holders %**
   - Description: The percentage of total supply held by the top 10 wallets. High concentration can indicate manipulation risk.
   - Type: Percentage (%)
   - Operators: greater than, less than
@@ -164,43 +160,18 @@ Use this as a dictionary for Strategy Editor rule types.
   - Type: Percentage (%)
   - Operators: greater than, less than
 
-- **KOLs Count**
-  - Description: Number of Key Opinion Leaders (KOLs) associated with the token.
-  - Type: Number
-  - Operators: greater than, less than
-
-- **Global Fees Paid (SOL)**
-  - Description: Total global fees paid in SOL.
-  - Type: Number (SOL)
-  - Operators: greater than, less than
-
-- **Pro Traders**
-  - Description: Number of professional traders associated with the token. Pro traders are users of trading platforms like Axiom, Padre, Photon, etc.
-  - Type: Number
-  - Operators: greater than, less than
-
-- **Snipers %**
-  - Description: Percentage of sniper transactions.
+- **Snipers Holdings %**
+  - Description: How much of the token is held by early buyers who got in within the first few trades. High percentages may mean they can dump.
   - Type: Percentage (%)
   - Operators: greater than, less than
 
-- **Insiders %**
-  - Description: Percentage of insider transactions.
+- **Insiders Holdings %**
+  - Description: How much of the token is held by wallets linked to the team or creators. High percentages raise rug-pull risk.
   - Type: Percentage (%)
   - Operators: greater than, less than
 
-- **Bundle Transactions %**
-  - Description: Percentage of bundle transactions.
-  - Type: Percentage (%)
-  - Operators: greater than, less than
-
-- **Developer Migrations %**
-  - Description: Percentage of developer migrations.
-  - Type: Percentage (%)
-  - Operators: greater than, less than
-
-- **Developer Pairs Created %**
-  - Description: Percentage of trading pairs created by the developer.
+- **Bundlers Holdings %**
+  - Description: How much is held by wallets that bought together, often in coordinated batches. High percentages can signal artificial or bot activity.
   - Type: Percentage (%)
   - Operators: greater than, less than
 
@@ -214,10 +185,6 @@ Use this as a dictionary for Strategy Editor rule types.
   - Type: Boolean (True/False)
   - Operators: is
 
-- **Exclude Top 10 High Ownership**
-  - Description: Top 10 holders control a large percentage of supply.
-  - Type: Boolean (True/False)
-  - Operators: is
 
 ## Socials
 
@@ -241,73 +208,85 @@ Use this as a dictionary for Strategy Editor rule types.
   - Type: Boolean (True/False)
   - Operators: is
 
-- **DEX Paid**
-  - Description: Indicates if DEX fees have been paid.
+- **Website Shows CA**
+  - Description: The token's website content includes the token's contract address.
   - Type: Boolean (True/False)
   - Operators: is
 
-- **Only Pump Live**
-  - Description: Filter for tokens that are only available on Pump.fun live.
+- **Website Contains $Token Name**
+  - Description: Website content contains the token name or symbol, with or without the `$` prefix.
   - Type: Boolean (True/False)
-  - Operators: is
+  - Operators: is, is not
 
-- **Website Shows CA** *(Coming Soon)*
-  - Description: Website content contains a contract address (CA).
+- **X Link Contains CA**
+  - Description: True when the provided X URL resolves to readable content and that content includes the token's contract address.
   - Type: Boolean (True/False)
-  - Operators: is
+  - Operators: is, is not
 
-- **Website Domain Age** *(Coming Soon)*
-  - Description: Age of the website domain in days.
-  - Type: Number (days)
-  - Operators: greater than, less than
+- **X Link Contains $Token Name**
+  - Description: True when the provided X URL content contains the token name or symbol, with or without the `$` prefix.
+  - Type: Boolean (True/False)
+  - Operators: is, is not
 
-- **Twitter Followers** *(Coming Soon)*
-  - Description: Number of followers of the project's Twitter/X account.
+- **X Views**
+  - Description: How many people have seen the token's X post. For retweets or quotes, the higher view count is used.
   - Type: Number
   - Operators: greater than, less than
 
-- **Twitter CA Mentions** *(Coming Soon)*
-  - Description: Number of search results on Twitter/X that contain the token's contract address.
+- **X Community Size**
+  - Description: Total member count of the X community. This rule only applies when the X URL is a community link.
+  - Type: Number
+  - Operators: greater than, less than
+
+- **X Community Views**
+  - Description: Views on the token's X community page. This only applies when the X link points to a community, not a regular post.
+  - Type: Number
+  - Operators: greater than, less than
+
+- **X Followers**
+  - Description: The highest follower count among anyone tied to the token's X post: the original author, the user who retweeted it, or the community creator when the link is a community link.
   - Type: Number
   - Operators: greater than, less than
 
 ## AI
 
-- **Website Content Validity Score** *(Coming Soon)*
-  - Description: Similarity of website content to token name/description (0-100).
+- **Website Content Validity Score**
+  - Description: Checks whether the token's website actually talks about the token. In the UI, this is commonly used through presets such as `Very relevant`, `Somewhat relevant`, or `Any`.
   - Type: Number (0-100)
   - Operators: greater than, less than
 
-- **Twitter Account Validity Score** *(Coming Soon)*
-  - Description: Relevance of Twitter/X account content to token name/description (0-100).
+- **X (Twitter) Content Validity Score**
+  - Description: Checks whether the token's X URL content matches the token name and description. In the UI, this is commonly used through presets such as `Very relevant`, `Somewhat relevant`, or `Any`.
   - Type: Number (0-100)
   - Operators: greater than, less than
 
-## Understanding Rule Types
+## Rule types
 
 ### Boolean Rules
-Rules that check for the presence or absence of a condition. Use "is" operator to set whether the condition should be true or false.
+Rules that check for the presence or absence of a condition. Most use `is`, and some also support `is not`.
 
 **Example:** "Exclude Honeypots" - Set to "is true" to exclude honeypot tokens.
 
 ### Number Rules
-Rules that compare numeric values. Use "greater than" or "less than" operators with a threshold value.
+
+Number Rules compare a numeric value against a threshold.
 
 **Example:** "Liquidity ($)" - Set "greater than $10,000" to require minimum liquidity.
 
 ### Percentage Rules
-Rules that compare percentage values. Use "greater than" or "less than" operators with a percentage threshold.
+
+Percentage Rules compare a percentage value against a threshold.
 
 **Example:** "Sell Tax %" - Set "less than 10%" to exclude tokens with high sell taxes.
 
 ### String/Enum Rules
-Rules with predefined options. Use "equals" or "does not equal" operators with a specific value.
+
+String or enum Rules compare a value from a fixed set of options.
 
 **Example:** "Risk Level" - Set "does not equal CRITICAL" to exclude high-risk tokens.
 
-## Operator Reference
+## Operators
 
 - **is** / **is not**: Used for boolean rules to check if a condition is true or false
 - **equals** / **does not equal**: Used for string/enum rules to match specific values
 - **greater than** / **less than**: Used for number and percentage rules to compare against thresholds
-

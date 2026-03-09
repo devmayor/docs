@@ -1,0 +1,699 @@
+---
+title: "APIs"
+description: "External API reference for strategies, notifications, performance, and webhook configuration."
+---
+
+Use this page to integrate directly with MemePerfect's external API.
+
+If you are integrating for the first time, start with the end-to-end [API Walkthrough](/developers/api-walkthrough), then use this page as endpoint reference.
+
+<Frame caption="Use the external API to manage Strategies and consume alert outcomes from your own systems.">
+  <img src="/images/api-access.png" alt="Illustration for developer API key section" />
+</Frame>
+
+## Base URL
+
+```text
+https://api.memeperfect.io/api/external/v1
+```
+
+## Getting an API key
+
+1. Open **Settings** in the app.
+2. Go to **API Access**.
+
+<Frame caption="Generate your API key from Settings.">
+  <img src="/images/generate-api-key.png" alt="Developer API key generation screen" />
+</Frame>
+
+3. Create or regenerate your API key.
+
+<Frame caption="The full key is only shown at generation time.">
+  <img src="/images/key.jpg" alt="Generated API key shown in the dashboard" />
+</Frame>
+
+4. Store it securely.
+
+<Warning>
+Never expose API keys in browser code or public repositories.
+</Warning>
+
+## Authentication
+
+The API accepts one of these header formats:
+
+```http
+X-API-Key: mpk_your_api_key_here
+```
+
+```http
+Authorization: ApiKey mpk_your_api_key_here
+```
+
+<Info>
+`X-MP-API-Key` is not accepted. Use `X-API-Key` or `Authorization: ApiKey ...`.
+</Info>
+
+## Rate limits and plan limits
+
+Limits are plan-based and enforced per API key:
+
+- `PRO`: 60 requests per minute, up to 25 active Strategies
+- `DEGEN`: 300 requests per minute, up to 50 active Strategies
+
+Check current limits with `GET /me`.
+
+## Common error shape
+
+Validation and auth errors use this structure:
+
+```json
+{
+  "statusCode": 401,
+  "message": "API key required. Provide via X-API-Key header or Authorization: ApiKey <key>",
+  "error": "Unauthorized"
+}
+```
+
+## Endpoint reference
+
+Lifecycle order:
+
+1. `GET /me`
+2. `POST /strategies`
+3. `POST /strategies/:id/activate`
+4. `GET /notifications` and `GET /notifications/:id`
+5. `GET /notifications/performance` or async performance jobs
+6. `PUT /webhook`
+7. `POST /strategies/:id/deactivate`
+
+### `GET /me`
+
+Returns authenticated user plan and limits.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/me' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "userId": "4fcb13dc-2f0c-49bb-97a3-2f2f7ac0f80f",
+  "plan": "PRO",
+  "limits": {
+    "strategies": {
+      "total": null,
+      "active": 25
+    },
+    "rateLimit": {
+      "requestsPerMinute": 60
+    }
+  }
+}
+```
+
+### `GET /strategies`
+
+Returns all Strategies for the authenticated user and `activeCount`.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/strategies' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "strategies": [
+    {
+      "id": "b1b3f6f3-84be-4c7c-8e44-4cb4a58bad55",
+      "name": "Momentum Strategy",
+      "description": "Filters for high social acceleration",
+      "userId": "4fcb13dc-2f0c-49bb-97a3-2f2f7ac0f80f",
+      "triggers": [
+        {
+          "id": "t1",
+          "eventType": "new_token_created",
+          "enabled": true
+        }
+      ],
+      "dealbreakers": [],
+      "ruleGroups": [
+        {
+          "id": "security",
+          "name": "Security",
+          "logic": "AND",
+          "rules": []
+        },
+        {
+          "id": "market",
+          "name": "Market",
+          "logic": "AND",
+          "rules": []
+        },
+        {
+          "id": "socials",
+          "name": "Socials",
+          "logic": "AND",
+          "rules": []
+        },
+        {
+          "id": "ai",
+          "name": "AI",
+          "logic": "AND",
+          "rules": []
+        }
+      ],
+      "strict": false,
+      "alertCooldownMins": 30,
+      "isActive": true,
+      "isGlobal": false,
+      "matching": {
+        "enabled": true,
+        "minPercent": 80
+      },
+      "createdAt": "2026-03-09T08:22:11.318Z",
+      "updatedAt": "2026-03-09T08:22:11.318Z"
+    }
+  ],
+  "activeCount": 1
+}
+```
+
+### `POST /strategies`
+
+Creates a new Strategy.
+
+Required body fields:
+
+- `name` (string)
+- `triggers` (array)
+- `dealbreakers` (array)
+- `ruleGroups` (array)
+- `isActive` (boolean)
+
+Required for UI compatibility:
+
+- Use four rule groups named exactly: `Security`, `Market`, `Socials`, `AI`
+- Use stable group IDs such as: `security`, `market`, `socials`, `ai`
+
+Important strategy-level options:
+
+- `strict` (optional, boolean)
+- `alertCooldownMins` (optional, number `0` to `1440`)
+
+Allowed trigger `eventType` values:
+
+- `new_token_created`
+- `followed_dev_new_token_created`
+- `twitter_mention_direct`
+- `tweet_metadata_match`
+- `token_almost_graduated`
+- `token_graduated`
+
+```bash
+curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "E2E Test Strategy",
+    "strict": true,
+    "alertCooldownMins": 30,
+    "triggers": [
+      {
+        "id": "t1",
+        "eventType": "new_token_created",
+        "enabled": true
+      }
+    ],
+    "dealbreakers": [],
+    "ruleGroups": [
+      {
+        "id": "security",
+        "name": "Security",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "market",
+        "name": "Market",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "socials",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "ai",
+        "name": "AI",
+        "logic": "AND",
+        "rules": []
+      }
+    ],
+    "isActive": false
+  }'
+```
+
+```json
+{
+  "strategy": {
+    "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+    "name": "E2E Test Strategy",
+    "description": null,
+    "userId": "4fcb13dc-2f0c-49bb-97a3-2f2f7ac0f80f",
+    "triggers": [
+      {
+        "id": "t1",
+        "eventType": "new_token_created",
+        "enabled": true
+      }
+    ],
+    "dealbreakers": [],
+    "ruleGroups": [
+      {
+        "id": "security",
+        "name": "Security",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "market",
+        "name": "Market",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "socials",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "ai",
+        "name": "AI",
+        "logic": "AND",
+        "rules": []
+      }
+    ],
+    "strict": false,
+    "isActive": false,
+    "isGlobal": false,
+    "createdAt": "2026-03-09T08:25:58.221Z",
+    "updatedAt": "2026-03-09T08:25:58.221Z"
+  }
+}
+```
+
+### `GET /strategies/:id`
+
+Returns one Strategy by UUID.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "strategy": {
+    "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+    "name": "E2E Test Strategy",
+    "description": null,
+    "userId": "4fcb13dc-2f0c-49bb-97a3-2f2f7ac0f80f",
+    "triggers": [
+      {
+        "id": "t1",
+        "eventType": "new_token_created",
+        "enabled": true
+      }
+    ],
+    "dealbreakers": [],
+    "ruleGroups": [
+      {
+        "id": "security",
+        "name": "Security",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "market",
+        "name": "Market",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "socials",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": []
+      },
+      {
+        "id": "ai",
+        "name": "AI",
+        "logic": "AND",
+        "rules": []
+      }
+    ],
+    "strict": false,
+    "alertCooldownMins": 30,
+    "isActive": false,
+    "createdAt": "2026-03-09T08:25:58.221Z",
+    "updatedAt": "2026-03-09T08:25:58.221Z"
+  }
+}
+```
+
+### `PATCH /strategies/:id`
+
+Partially updates a Strategy. Uses the same schema as `POST /strategies`, but all fields are optional.
+
+```bash
+curl -X PATCH 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Updated E2E Strategy",
+    "description": "Updated desc"
+  }'
+```
+
+```json
+{
+  "strategy": {
+    "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+    "name": "Updated E2E Strategy",
+    "description": "Updated desc",
+    "isActive": false
+  }
+}
+```
+
+### `POST /strategies/:id/activate`
+
+Activates a Strategy.
+
+```bash
+curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35/activate' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "strategy": {
+    "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+    "isActive": true
+  }
+}
+```
+
+### `POST /strategies/:id/deactivate`
+
+Deactivates a Strategy.
+
+```bash
+curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35/deactivate' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "strategy": {
+    "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+    "isActive": false
+  }
+}
+```
+
+### `DELETE /strategies/:id`
+
+Deletes a Strategy.
+
+```bash
+curl -X DELETE 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "success": true
+}
+```
+
+### `GET /notifications`
+
+Lists notifications with pagination and optional filtering.
+
+Query parameters:
+
+- `page` (optional, default `1`)
+- `limit` (optional, default `20`, max `100`)
+- `strategyId` (optional)
+- `triggerType` (optional)
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/notifications?page=1&limit=20&strategyId=9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "items": [
+    {
+      "id": "497e3b40-3a6e-449f-87cd-4f96af15cffe",
+      "userId": "4fcb13dc-2f0c-49bb-97a3-2f2f7ac0f80f",
+      "strategyId": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+      "channel": "telegram",
+      "status": "sent",
+      "triggerEventType": "new_token_created",
+      "triggerContext": {
+        "tokenAddress": "7xKXExampleAddress",
+        "tokenData": {
+          "tokenSymbol": "EXAMPLE",
+          "market": {
+            "priceUSD": 0.00012,
+            "mcap": 120000
+          }
+        }
+      },
+      "sentAt": "2026-03-09T08:31:05.120Z",
+      "createdAt": "2026-03-09T08:31:05.120Z",
+      "updatedAt": "2026-03-09T08:31:05.120Z",
+      "strategy": {
+        "id": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+        "name": "Updated E2E Strategy"
+      }
+    }
+  ],
+  "page": 1,
+  "limit": 20,
+  "total": 1,
+  "totalPages": 1
+}
+```
+
+### `GET /notifications/:id`
+
+Returns one notification for the authenticated user, including live performance snapshot.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/notifications/497e3b40-3a6e-449f-87cd-4f96af15cffe' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "id": "497e3b40-3a6e-449f-87cd-4f96af15cffe",
+  "userId": "4fcb13dc-2f0c-49bb-97a3-2f2f7ac0f80f",
+  "strategyId": "9a46ddf3-98fd-4cf5-8fd0-022421741c35",
+  "channel": "telegram",
+  "status": "sent",
+  "triggerEventType": "new_token_created",
+  "triggerContext": {
+    "tokenAddress": "7xKXExampleAddress"
+  },
+  "livePerformance": {
+    "priceNow": 0.00018,
+    "marketCapNow": 180000,
+    "peakPrice": 0.00029,
+    "athPrice": 0.00029
+  },
+  "sentAt": "2026-03-09T08:31:05.120Z",
+  "createdAt": "2026-03-09T08:31:05.120Z",
+  "updatedAt": "2026-03-09T08:31:05.120Z"
+}
+```
+
+### `GET /notifications/performance`
+
+Returns performance summary for one Strategy and one range.
+
+Required query parameters:
+
+- `strategyId` (string)
+- `range` (`daily` | `weekly` | `monthly` | `quarterly`)
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/notifications/performance?range=daily&strategyId=9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "overall": {
+    "totalCalls": 32,
+    "winners": 9,
+    "winRate": 0.28125,
+    "avgAthMultiple": 1.7412,
+    "bestAthMultiple": 6.2031
+  },
+  "buckets": [
+    { "label": "<1x", "min": 0, "max": 1, "count": 10 },
+    { "label": "1-1.2x", "min": 1, "max": 1.2, "count": 7 },
+    { "label": "1.2-2x", "min": 1.2, "max": 2, "count": 9 },
+    { "label": "2-5x", "min": 2, "max": 5, "count": 5 },
+    { "label": "5-10x", "min": 5, "max": 10, "count": 1 },
+    { "label": "10x+", "min": 10, "max": null, "count": 0 }
+  ],
+  "topTokens": [
+    {
+      "tokenAddress": "7xKXExampleAddress",
+      "tokenSymbol": "EXAMPLE",
+      "tokenName": "Example Token",
+      "alertMcap": 120000,
+      "currentMcap": 180000,
+      "athMcap": 744372,
+      "athMultiple": 6.2031
+    }
+  ]
+}
+```
+
+### `POST /notifications/performance/jobs`
+
+Creates an async performance job.
+
+Required query parameters:
+
+- `strategyId` (string)
+- `range` (`daily` | `weekly` | `monthly` | `quarterly`)
+
+```bash
+curl -X POST 'https://api.memeperfect.io/api/external/v1/notifications/performance/jobs?range=daily&strategyId=9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "jobId": "48112"
+}
+```
+
+### `GET /notifications/performance/jobs/:jobId`
+
+Returns async performance job status and result when completed.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/notifications/performance/jobs/48112' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "jobId": "48112",
+  "status": "active",
+  "rawState": "active",
+  "progress": {
+    "totalTokens": 200,
+    "processedTokens": 58,
+    "remainingTokens": 142,
+    "progressPercent": 29
+  }
+}
+```
+
+When status is `completed`, the response includes:
+
+- `result.overall`
+- `result.buckets`
+- `result.topTokens`
+
+### `GET /webhook`
+
+Returns webhook configuration for the authenticated user.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/webhook' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "enabled": true,
+  "url": "https://example.com/memeperfect/webhook",
+  "verifiedAt": "2026-03-09T08:36:21.522Z",
+  "hasSecret": true
+}
+```
+
+### `PUT /webhook`
+
+Updates webhook configuration.
+
+Body fields:
+
+- `enabled` (required, boolean)
+- `url` (optional, string or `null`)
+
+Behavior notes:
+
+- Set `url` to `null` to clear webhook config and secret.
+- When URL changes, backend attempts verification and may return `verificationError`.
+- A new `secret` is only returned when generated or rotated.
+
+```bash
+curl -X PUT 'https://api.memeperfect.io/api/external/v1/webhook' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "enabled": true,
+    "url": "https://example.com/memeperfect/webhook"
+  }'
+```
+
+```json
+{
+  "enabled": true,
+  "url": "https://example.com/memeperfect/webhook",
+  "verifiedAt": "2026-03-09T08:36:21.522Z",
+  "hasSecret": true,
+  "secret": "whsec_9SNQ...",
+  "verificationError": null
+}
+```
+
+## Error cases to handle
+
+Your client should handle at least these responses:
+
+- `400` validation errors (invalid body, query, or path params)
+- `401` missing or invalid API key
+- `403` no active subscription or plan limit reached
+- `404` resource not found (or belongs to another user)
+- `429` throttled (`Rate limit exceeded`)
+
+<CardGroup cols={2}>
+  <Card title="API Walkthrough" icon="route" href="/developers/api-walkthrough">
+    Full integration flow from create to activate, observe, webhook, and deactivate.
+  </Card>
+  <Card title="Webhooks" icon="bolt" href="/developers/webhooks">
+    Webhook payload format, signing, and verification flow.
+  </Card>
+  <Card title="Strategy Rules Spec" icon="list-checks" href="/developers/strategy-rules">
+    Rule payload schema, supported ruleType IDs, operators, and value formats.
+  </Card>
+  <Card title="AI Agent" icon="bot" href="/developers/ai-agent">
+    Build agent workflows on top of Strategy and notification outputs.
+  </Card>
+</CardGroup>

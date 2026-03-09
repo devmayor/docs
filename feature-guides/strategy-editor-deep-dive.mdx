@@ -1,32 +1,47 @@
 ---
 title: "The Strategy Editor: A Deep Dive"
-description: "Build powerful strategies with a guided 4‑step wizard."
+description: "Build and refine a Strategy using the 4-step editor."
 ---
 
-The Strategy Editor turns your insights into an automated, 24/7 alpha‑hunting machine. It's a simple 4‑step wizard.
+This page explains how to use the Strategy Editor from start to finish. Use it when you want to build a new Strategy or understand what each step controls.
 
-#### Step 1: Details — Naming & Data Policy
-<Frame caption="Step 1 settings">
-  <img src="/images/details.png" alt="Strategy editor step 1" />
-</Frame>
-- Name your strategy clearly (e.g., "High‑Volume Breakout Screener").
-- Data Handling Policy:
-  - **Data Strictness (ON)**: Wait for critical data; fail if missing (safest).
-  - **Data Strictness (OFF)**: Proceed and skip missing data (degenerate mode—use with caution).
+## Step 1: Details
 
-<Frame caption="Step 1 settings: Click the setting (Gear) icon">
-  <img src="/images/Strictness.png" alt="Strategy editor step 1 strictness" />
+This step defines the Strategy name and how missing data should be handled.
+
+<Frame caption="The Details step is where you name the Strategy and set data handling behavior.">
+  <img src="/images/details.png" alt="Strategy editor details step" />
 </Frame>
 
-#### Step 2: Triggers — Defining "When"
+- Choose a clear name so you can identify the Strategy later.
+- Review the data handling setting:
+  - **Data Strictness (ON)** waits for required data and fails evaluation if that data is missing.
+  - **Data Strictness (OFF)** continues evaluation and skips missing data.
 
-Combine different trigger types. Example: "New Token Created" AND "A tweet mentions a token" to apply the same safety rules to both.
+<Frame caption="Use the settings icon to adjust Data Strictness before saving the Strategy.">
+  <img src="/images/strictness.png" alt="Strategy editor strictness settings" />
+</Frame>
 
-#### Step 3: Rules — Defining "What"
+## Step 2: Triggers
 
-Rules are the conditions that tokens must meet to generate an alert. Once a trigger fires, rules evaluate the token's properties, on-chain data, and social signals.
+This step defines when the Strategy should run.
 
-<Frame caption="Rules evaluation interface">
+You can add one or more Triggers. If any configured Trigger fires, the Strategy starts evaluating the token.
+
+Use this step to answer: "What event should make this Strategy wake up?"
+
+Examples:
+
+- **Newly Created Tokens**
+- **Tweet Mentions Token**
+- **Tweet Metadata Match**
+- **Newly Created Token From Followed Dev**
+
+## Step 3: Rules
+
+This step defines what must be true after a Trigger fires.
+
+<Frame caption="The Rules step is where you set the filters that determine whether a token qualifies.">
   <img src="/images/rules.png" alt="Rules interface showing Security, Market, Socials, and AI categories" />
 </Frame>
 
@@ -71,6 +86,8 @@ Security rules protect you from scams and risky tokens. These rules check for:
 - Exclude Tokens With Lockers: Filters tokens that use lockers
 - Exclude Mutable Tokens: Filters tokens with changeable metadata or supply
 - Token Age: Filters by how long the token has existed (Min/Max)
+- Exclude Top 10 High Ownership: Filters tokens with excessive top 10 holder concentration
+
 
 **Example Security Configuration:**
 
@@ -90,7 +107,7 @@ Market rules evaluate trading and economic metrics. These include:
 - **Transaction Metrics**: Buy/sell counts, transaction counts
 - **Taxes**: Buy and sell tax percentages
 - **Holder Distribution**: Top 10 holder percentage, dev wallet percentage
-- **Trading Activity**: KOLs, pro traders, snipers, insiders
+- **Trading Activity**: snipers, insiders, bundles
 - **Platform Indicators**: Pump.fun tokens, bonding curve progress
 
 **Available Market Rules:**
@@ -99,10 +116,7 @@ Market rules evaluate trading and economic metrics. These include:
 - Liquidity ($): Sets minimum liquidity in USD (Min/Max)
 - 24h Trading Volume ($): Sets bounds on 24-hour trading volume (Min/Max)
 - Number of Buys: Sets bounds on buy transaction count (Min/Max)
-- KOLs Count: Sets bounds on Key Opinion Leader count (Min/Max)
-- Pro Traders: Sets bounds on professional trader count (Min/Max)
 - Insiders %: Sets bounds on insider ownership percentage (Min/Max)
-- Developer Migrations %: Sets bounds on developer migration percentage (Min/Max)
 - Bonding Curve %: Sets bounds on bonding curve percentage (Min/Max)
 - Total Holders: Sets bounds on total holder count (Min/Max)
 - Dev Wallet %: Sets bounds on developer wallet percentage (Min/Max)
@@ -110,13 +124,10 @@ Market rules evaluate trading and economic metrics. These include:
 - Market Cap ($): Sets bounds on market capitalization (Min/Max)
 - Transaction Count: Sets bounds on total transaction count (Min/Max)
 - Number of Sells: Sets bounds on sell transaction count (Min/Max)
-- Global Fees Paid (SOL): Sets bounds on fees paid in SOL (Min/Max)
 - Snipers %: Sets bounds on sniper percentage (Min/Max)
 - Bundle Transactions %: Sets bounds on bundle transaction percentage (Min/Max)
-- Developer Pairs Created %: Sets bounds on developer pairs created percentage (Min/Max)
 - Only Pump Tokens: Filters to only include pump tokens
 - Top 10 Holder %: Sets bounds on top 10 holder ownership percentage (Min/Max)
-- Exclude Top 10 High Ownership: Filters tokens with excessive top 10 holder concentration
 
 **Example Market Configuration:**
 
@@ -134,8 +145,7 @@ Social rules verify community presence and engagement:
 - **Telegram**: Presence of Telegram channel
 - **Twitter/X**: Twitter account availability
 - **Social Presence**: At least one social media link required
-- **DEX Paid**: Whether DEX listing fees have been paid
-- **Coming Soon**: Website domain age, Twitter followers, CA mentions (future features)
+- **Twitter followers counts, Twitter comminity counts, Tweet views count, CA mentions, Website/tweet content quality 
 
 **Available Social Rules:**
 
@@ -144,7 +154,6 @@ Social rules verify community presence and engagement:
 - Require At Least One Social: Requires at least one social media presence
 - Require Website: Requires token to have a website
 - Require Twitter: Requires token to have a Twitter account
-- DEX Paid: Filters tokens that have paid for DEX listings
 
 **Example Social Configuration:**
 
@@ -152,20 +161,18 @@ Social rules verify community presence and engagement:
 - Require Telegram ✓
 - Require Twitter ✓
 - Require At Least One Social ✓
-- DEX Paid ✓
 
 **AI**
 
 AI-powered rules use machine learning to evaluate token legitimacy:
 
-- **Website Content Validity Score**: How well website content matches token description (0-100)
-- **Twitter Account Validity Score**: Relevance of Twitter content to token (0-100)
+- **Website Content Validity Score**: How well website content matches token description (Relevant / Not relevant)
+- **Twitter Account Validity Score**: Relevance of Twitter content to token (Relevant / Not relevant)
 
 **Available AI Rules:**
 
-- Website Content Validity Score: AI assessment of website content legitimacy (Min/Max, 0-100)
-- Twitter Account Validity Score: AI assessment of Twitter account legitimacy (Min/Max, 0-100)
-
+- Website Content Validity Score: AI assessment of website content legitimacy (Relevant / Not relevant)
+- Twitter Account Validity Score: AI assessment of Twitter account legitimacy (Relevant / Not relevant)
 <Info>
 AI features are marked as "Coming Soon" and will be available in future updates.
 </Info>

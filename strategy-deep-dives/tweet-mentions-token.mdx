@@ -1,0 +1,98 @@
+---
+title: "Tweet Mentions Token"
+description: "How to build strategies around explicit token callouts from tracked authors."
+---
+
+Use this Trigger when you want your strategy to run after a tracked handle explicitly mentions a token.
+
+## In the Strategy Editor
+
+When you add this Trigger in **Step 2: Triggers**, you choose:
+
+- **Event Type**: `Tweet Mentions Token`
+- **Tag selection**: `All Handles` or one specific tag from **Twitter Handles**
+
+This tells the strategy which authors are allowed to trigger it.
+
+## What it does
+
+This Trigger runs when a selected handle explicitly points to a token.
+
+This is the most direct tweet-based Trigger in the app.
+
+## Source selection: All Handles vs Tags
+
+### All Handles
+
+Use `All Handles` when you want every tracked author in your **Twitter Handles** page to feed this strategy.
+
+This is useful when:
+
+- you keep a small, high-quality handle list
+- the strategy is meant to react to your full tweet signal set
+- you do not need different logic for different handle groups yet
+
+### A specific tag
+
+Use a tag when you only want part of your handle list to power this Trigger.
+
+Examples:
+
+- `trusted-callers`
+- `meme-accounts`
+- `ecosystem-research`
+
+You create and manage these tags on the [Twitter Handles](/feature-guides/discovery-hubs/twitter-handles) page.
+
+### Example: trusted callers tag
+
+You can create a tag in **Twitter Handles** for higher-conviction call accounts, for example:
+
+- `Ansem`
+- `threadguy`
+- `MachiBigBrother`
+- `hsaka`
+- `Zeneca`
+
+Then, in the Trigger, select that tag instead of `All Handles`.
+
+Now the strategy will only react when one of those handles explicitly mentions a token.
+
+If one of them tweets a contract address, cashtag, or direct token reference, that token is passed into your strategy and evaluated by your Rules.
+
+This is useful when you want fast reaction, but only from a smaller set of accounts you already trust.
+
+## Why tags improve strategy quality
+
+Tags let you separate different kinds of signal.
+
+This improves your strategy because you can:
+
+- keep one strategy focused on higher-conviction handles
+- give noisy handles stricter Rules
+- avoid mixing very different account types into one trigger source
+- reuse the same tag across multiple strategies
+
+Without tags, one broad handle list usually forces one broad ruleset.
+
+## Best way to use this Trigger
+
+Use the Trigger for the **who**.
+
+Use Rules for the **quality filter**.
+
+Example:
+
+- Trigger from a `trusted-callers` tag
+- Then require liquidity, holder count, socials, and safety checks
+
+That structure is cleaner than trying to make the Trigger itself do all the filtering.
+
+## When to use it
+
+Choose **Tweet Mentions Token** when the value comes from explicit callouts by accounts you already trust.
+
+<CardGroup cols={2}>
+  <Card title="Twitter Handles" icon="user-group" href="/feature-guides/discovery-hubs/twitter-handles" />
+  <Card title="Trigger Glossary" icon="bolt" href="/reference/trigger-glossary" />
+</CardGroup>

@@ -1,0 +1,89 @@
+---
+title: "Backtests"
+description: "Test your strategy against historical evaluations before going live."
+---
+
+Backtests let you run a saved strategy against past evaluations to see how it would have performed. You get metrics like precision, recall, F1, and winner counts—without risking real alerts.
+
+<Tip>
+Use backtests to tune rules, compare strategies, or validate changes before activating.
+</Tip>
+
+### How to Run a Backtest
+
+<Steps>
+  <Step title="Open Backtests">
+    From the sidebar, go to **Strategies** → **Backtests**. Click **New Backtest**.
+  </Step>
+  <Step title="Select strategy">
+    Choose the strategy whose rules you want to test. This is the logic that will be applied to historical data.
+  </Step>
+  <Step title="Choose evaluation source">
+    Select **All strategies** to run on evaluations from any of your strategies in the time window, or pick one strategy to limit the source data.
+  </Step>
+  <Step title="Set lookback window">
+    Use the slider to pick 1–7 days (or up to 14 days on DEGEN plan). The backtest analyzes the previous N days ending at the current time.
+  </Step>
+  <Step title="Configure options (optional)">
+    - **Event Type**: Filter by trigger type (e.g., Newly Created Tokens, Tweet Metadata Match).
+    - **Threshold (x)**: Minimum multiple to count as a winner (e.g., 2 = market cap at least 2× baseline at evaluation time).
+    - **Strictness Override**: Use strategy default, or force Strict ON or Strict OFF.
+    - **Max tokens**: Limit how many evaluations to process (default 5000).
+  </Step>
+  <Step title="Start backtest">
+    Click **Start Backtest**. You're redirected to the job page. Processing can take several minutes.
+  </Step>
+</Steps>
+
+<Frame caption="New Backtest modal">
+  <img src="/images/backtest-modal.png" alt="New Backtest modal showing strategy selection, lookback window, and options" />
+</Frame>
+
+<Info>
+Backtests require an active subscription. Weekly plans and renewals may have different limits.
+</Info>
+
+### Job Statuses
+
+- **QUEUED**: Job is waiting to run.
+- **RUNNING**: Backtest is processing evaluations.
+- **COMPLETED**: Results are ready to view.
+- **FAILED**: Job ended with an error.
+
+### Understanding Results
+
+Once completed, the backtest job page shows:
+
+- **Tested**: Number of evaluations processed.
+- **Positives**: Evaluations that matched your strategy rules.
+- **Winners (24h/72h)**: Tokens that reached the threshold multiple within 24 or 72 hours.
+- **Precision**: Proportion of matches that were winners.
+- **Recall**: Proportion of winners that your strategy caught.
+- **F1**: Harmonic mean of precision and recall.
+
+### Filtering and Sorting Results
+
+Use the result table filters:
+
+- **Matched**: All, Yes, or No (whether the token matched your rules).
+- **Winners (now)**: All, Yes, or No (whether the token is currently a winner).
+- **Multiple**: Min/max range for price multiple.
+- **Search token**: Filter by contract address.
+- **Sort**: By evaluation timestamp, multiple, or other fields.
+
+<Frame caption="Backtest job results">
+  <img src="/images/backtest.png" alt="Backtest job page showing metrics and filterable results table" />
+</Frame>
+
+### Running from a Strategy Card
+
+You can also start a backtest from a strategy card. Click **Backtest** on the card and the modal opens with that strategy pre-selected.
+
+<CardGroup cols={2}>
+  <Card title="Strategy Performance" icon="chart-line" href="/feature-guides/strategy-performance">
+    Track live performance of active strategies.
+  </Card>
+  <Card title="Strategy Editor" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive">
+    Adjust rules based on backtest insights.
+  </Card>
+</CardGroup>

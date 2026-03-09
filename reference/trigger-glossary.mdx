@@ -1,22 +1,39 @@
 ---
-title: "Full Trigger Glossary"
-description: "Events that cause strategies to run—the 'when' of your alerts."
+title: "Trigger Glossary"
+description: "Reference definitions for each Trigger type."
 ---
 
-- **A New Token is Created**
-  - Description: Fires when a token is added on the Solana chain or on meme platforms like pump.fun
+Use this page when you need a quick definition of a Trigger in the Strategy Editor.
+
+## Trigger list
+
+- **Newly Created Tokens**
+  - Runs when a new token is created on Solana or on supported launch platforms such as Pump.fun.
+  - Use this when you want the broadest possible discovery surface and want your Rules to do most of the filtering.
 
 - **Almost Graduated Tokens**
-  - Description: Fires when tokens have gone past the newly created stage and are heading for graduation
+  - Runs when a token has moved beyond the earliest launch phase and is approaching graduation.
+  - Use this when you want less noise than raw new launches but still want tokens before full graduation.
 
 - **Graduated Tokens**
-  - Description: Fires when a token has finally graduated from platforms like pump.fun
+  - Runs when a token graduates from a launch platform into full DEX liquidity.
+  - Use this when you care more about post-graduation structure, liquidity transition, and confirmation.
 
-- **A Tweet Mentions a Token**
-  - Description: Fires when a tweet mentions a token either by contract address (CA) or token name. Matches your settings and author list.
+- **Tweet Mentions Token**
+  - Runs when a tracked author explicitly points to a token.
+  - Best for fast reaction to trusted callouts, contract address mentions, and other direct tweet-based signals.
+  - Deep dive: [Tweet Mentions Token](/strategy-deep-dives/tweet-mentions-token)
 
-- **AI Generated Tokens from Tweets**
-  - Description: Fires when possible token names are generated from tweets and are found to be newly created. For example, if Elon tweets about "colony on mars," the AI will predict and create likely token names from his tweets like `Mars` or `Mars doge`. When new launches are created with this likeness, they will trigger your rules to evaluate.
+- **Tweet Metadata Match**
+  - Runs when a new token's metadata clearly matches stored tweet signals from tracked authors.
+  - Matching can come from token name, symbol, description, URLs, and keyword overlap.
+  - Deep dive: [Tweet Metadata Match](/strategy-deep-dives/tweet-metadata-match)
 
-- **A Followed Dev Deploys a New Token**
-  - Description: Fires when a developer you follow launches a new token
+- **Newly Created Token From Followed Dev**
+  - Runs when a developer you follow launches a new token.
+  - Best for creator-based strategies where the quality of the developer list is your main edge.
+  - Deep dive: [Followed Dev Launches](/strategy-deep-dives/followed-dev-launches)
+
+<Card title="Triggers vs. Rules" icon="bolt" href="/core-concepts/triggers-vs-rules">
+  Learn how Triggers fit into the full evaluation flow.
+</Card>

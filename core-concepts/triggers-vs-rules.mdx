@@ -1,11 +1,11 @@
 ---
 title: "Triggers vs. Rules"
-description: "Learn the difference between event timing and evaluation criteria."
+description: "Learn what starts evaluation and what qualifies a token."
 ---
 
-It's essential to understand the difference between a Trigger and a Rule.
+This page explains the difference between a Trigger and a Rule. The distinction is simple, but it is central to building good Strategies.
 
-#### Triggers: The "When"
+## Triggers: the "when"
 
 A Trigger is the event that says: wake up and analyze now. Your strategy runs only when an event matches one of your triggers.
 
@@ -14,7 +14,7 @@ A Trigger is the event that says: wake up and analyze now. Your strategy runs on
   - Almost graduated tokens: Tokens has gone past the newly created stage and heading for graduation
   - Graduated tokens: Token has finally graduated 
   - Tweet mentions token: A Tweet Mentions a Token either by CA or token name
-  - Ai generated tokens from tweets: These are possible token names that are generated from tweets and are found to be newly created. e.g Elon tweets about colony on mars. The Ai will predict and created likely tokens names fromt his tweets like `Mars` or `Mars doge` and when new launches are created with this likeness, they will trigger your rules to evaluate
+  - Tweet metadata match: A new token launch is matched against stored tweet signals from your selected handles using metadata such as name, symbol, description, and linked URLs
   - Newly created token from followed dev: When a developer you follow launches a new token
 
 <img src="/images/triggers.png" alt="triggers" />
@@ -36,8 +36,6 @@ Rules are organized into four categories:
 
 <CardGroup cols={2}>
   <Card title="Dealbreakers" icon="shield" href="/core-concepts/dealbreakers" />
-  <Card title="Rule Groups (AND/OR)" icon="brackets-curly" href="/core-concepts/rule-groups" />
+  <Card title="Strategy Editor" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive" />
   <Card title="Strategy Editor Guide" icon="wand-magic" href="/feature-guides/strategy-editor-deep-dive" />
 </CardGroup>
-
-

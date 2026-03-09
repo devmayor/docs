@@ -1,0 +1,109 @@
+---
+title: "Tweet Metadata Match"
+description: "How to build strategies around launches whose metadata matches tracked tweets."
+---
+
+Use this Trigger when you want your strategy to run if a new token's metadata lines up with tweets from selected handles.
+
+## In the Strategy Editor
+
+When you add this Trigger in **Step 2: Triggers**, you choose:
+
+- **Event Type**: `Tweet Metadata Match`
+- **Tag selection**: `All Handles` or one specific tag from **Twitter Handles**
+
+The description under the selector tells you what will happen: tweets from that handle set will be matched against token metadata.
+
+## What it does
+
+This Trigger compares tracked tweets against newly created token metadata.
+
+The match can use fields such as:
+
+- token name
+- token symbol
+- description
+- linked URLs
+- keyword overlap
+
+This is a structured metadata match, not the old narrative engine.
+
+## Source selection: All Handles vs Tags
+
+### All Handles
+
+Use `All Handles` when you want every tracked handle to feed metadata matching.
+
+This only makes sense if your full handle list is already clean and focused.
+
+### A specific tag
+
+Use a tag when you want metadata matching to come from one specific group of accounts.
+
+This is usually the better setup.
+
+Examples:
+
+- accounts tied to one ecosystem
+- meme accounts with a very specific style
+- project or builder accounts that frequently create recognizable launch context
+
+### Example: news handles tag
+
+You can create a tag in **Twitter Handles** for crypto news and media accounts, for example:
+
+- `Forbes`
+- `CoinDesk`
+- `Cointelegraph`
+- `Decrypt`
+- `The Block`
+
+Then, in the Trigger, select that tag instead of `All Handles`.
+
+Now the strategy will only use tweets from those handles for metadata matching.
+
+That means if one of those accounts posts about a project, theme, or token name, and a newly created token later includes that same context in its:
+
+- Twitter metadata
+- website metadata
+- token description
+- token name or symbol
+
+the token can be picked up by this Trigger and passed into your Rules.
+
+## Why tags matter more here
+
+This Trigger is broader than **Tweet Mentions Token**, so source quality matters more.
+
+Using tags improves the strategy because it helps you:
+
+- reduce unrelated matches
+- keep the metadata context consistent
+- build separate strategies for different themes
+- apply stricter Rules only where they are needed
+
+If you feed this Trigger with a very mixed handle list, the strategy becomes harder to trust.
+
+## Best way to use this Trigger
+
+Use this Trigger when you want a middle ground:
+
+- broader than direct mentions
+- still grounded in real token metadata
+
+The usual structure is:
+
+1. choose a narrow tag
+2. let the Trigger surface possible matches
+3. use stricter Rules to filter for quality
+
+This is why many users keep tighter handle groups for metadata match than for direct mentions.
+
+## When to use it
+
+Choose **Tweet Metadata Match** when you want to discover launches that line up with a known social source even when nobody explicitly posted the token contract yet.
+
+<CardGroup cols={2}>
+  <Card title="Twitter Handles" icon="user-group" href="/feature-guides/discovery-hubs/twitter-handles" />
+  <Card title="Trigger Glossary" icon="bolt" href="/reference/trigger-glossary" />
+</CardGroup>
