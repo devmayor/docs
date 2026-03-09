@@ -823,6 +823,7 @@ If a user asks for one of these, explain that it is not documented in the public
 
 Use these docs for deeper context:
 
+- `https://memeperfect.io/skill.md`
 - `https://docs.memeperfect.io/llms.txt`
 - `https://docs.memeperfect.io/developers/apis`
 - `https://docs.memeperfect.io/developers/api-walkthrough`
