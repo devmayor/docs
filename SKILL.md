@@ -1,5 +1,5 @@
 ---
-name: memeperfect-external-api
+name: memeperfect-agent
 description: Use this skill when an agent needs to create, update, activate, inspect, or integrate MemePerfect Strategies through the public external API. This skill is restricted to documented external API capabilities and should not assume access to UI-only features.
 license: MIT
 compatibility: Requires HTTPS requests to the MemePerfect external API and a valid API key from the MemePerfect app.
