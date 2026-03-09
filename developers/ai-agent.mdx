@@ -85,7 +85,24 @@ while their own agents handle:
 - execution
 - feedback loops
 
+## Agent skill file
+
+MemePerfect publishes an agent-oriented skill file at:
+
+- [skill.md](https://docs.memeperfect.io/skill.md)
+
+Use this file as the contract for what an AI agent should assume about MemePerfect capabilities.
+
+It is designed to keep agents aligned with the public external API instead of UI-only behavior.
+
+Recommended usage:
+
+1. Load [skill.md](https://docs.memeperfect.io/skill.md) first.
+2. Use [APIs](/developers/apis) and [Strategy Rules Spec](/developers/strategy-rules) for full endpoint and payload details.
+3. Use [API Walkthrough](/developers/api-walkthrough) for end-to-end execution flow.
+
 <CardGroup cols={2}>
   <Card title="APIs" icon="code" href="/developers/apis" />
   <Card title="Webhooks" icon="bolt" href="/developers/webhooks" />
+  <Card title="Agent Skill File" icon="bot" href="https://docs.memeperfect.io/skill.md" />
 </CardGroup>
