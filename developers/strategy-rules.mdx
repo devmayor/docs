@@ -1,224 +1,106 @@
 ---
 title: "Strategy Rules Spec"
-description: "How to format dealbreakers and rule groups for create/update strategy API calls."
+description: "How to format the simplified rules[] payload for create/update strategy API calls."
 ---
 
 Use this page when building `POST /strategies` or `PATCH /strategies/:id` payloads programmatically.
 
-This reference is aligned with:
+The external API now accepts a single flat `rules` array. The backend maps it internally to `dealbreakers` and the four UI rule groups (`Security`, `Market`, `Socials`, `AI`).
 
-- backend external API DTO validation
-- frontend rule catalog used by the Strategy Wizard
+## Request shape
 
-## Rule object schema
-
-A rule in `dealbreakers` and `ruleGroups[].rules` uses the same shape:
+Create and update use this external rule shape:
 
 ```json
 {
-  "id": "rule-1",
-  "ruleType": "liquidity_usd",
-  "operator": "greater_than",
-  "value": 10000,
-  "enabled": true
+  "rule": "liquidity_usd",
+  "dealbreaker": false,
+  "min": 10000
 }
 ```
 
-Field requirements:
+Rule fields:
 
-- `id`: required string
-- `ruleType`: required string
-- `operator`: required string, one of:
-  - `greater_than`
-  - `less_than`
-  - `equals`
-  - `not_equals`
-  - `is`
-  - `is_not`
-- `value`: required (`string | number | boolean`)
-- `enabled`: required boolean
-
-## Group schema
-
-Rule groups are required on create.
-
-For UI compatibility, use these four standard groups from the Strategy Wizard tabs:
-
-- `Security`
-- `Market`
-- `Socials`
-- `AI`
-
-Use these canonical group IDs:
-
-- `security`
-- `market`
-- `socials`
-- `ai`
-
-Canonical shape:
-
-```json
-{
-  "id": "market",
-  "name": "Market",
-  "logic": "AND",
-  "rules": []
-}
-```
-
-Group fields:
-
-- `id`: required string
-- `name`: required string
-- `logic`: required (`AND` or `OR`)
-- `rules`: required array of rule objects
+- `rule`: required string. Must be an exact supported rule id.
+- `dealbreaker`: required boolean. Marks whether this rule is treated as a dealbreaker.
+- `enabled`: optional boolean. `enabled: false` skips any rule type.
+- `min`: optional number. Used only for numeric rules.
+- `max`: optional number. Used only for numeric rules.
+- `value`: optional string. Used only for enum rules (`risk_level`).
 
 <Warning>
-Do not use arbitrary group names like `Rules` if you want payloads to round-trip cleanly through the current UI tabs. Stick to `Security`, `Market`, `Socials`, and `AI`.
+Unknown rule ids fail hard. Wrong field types or wrong field combinations fail hard with a clear error message that includes the blocking `rules[index]`.
 </Warning>
 
-## Strategy-level fields often missed
+## Rule-kind behavior
 
-When creating or updating a Strategy, include these strategy-level fields as needed:
+### Boolean rules
 
-- `strict` (boolean): data strictness mode
-- `alertCooldownMins` (number, optional): cooldown per token in minutes, valid range `0` to `1440`
+Use `enabled` only.
 
-Cooldown behavior:
+- `enabled: true` applies the rule.
+- `enabled: false` skips the rule.
+- `min`, `max`, and `value` are not allowed.
 
-- After an alert is sent for token `X`, this Strategy suppresses new alerts for token `X` until cooldown expires.
-- Other tokens are unaffected.
-- In the UI this is shown as **Alert Cooldown (mins)**.
-
-## Dealbreakers vs grouped rules
-
-- `dealbreakers`: hard requirements checked first
-- `ruleGroups[].rules`: grouped rules evaluated after dealbreakers
-
-Both use the exact same rule object shape.
-
-## Operator and value compatibility
-
-Use the operator that matches the `valueType` of the `ruleType`.
-
-| `valueType` | Allowed operators | `value` type |
-| --- | --- | --- |
-| `boolean` | `is`, `is_not` (only where specified in catalog) | `true` or `false` |
-| `number` | `greater_than`, `less_than` | number |
-| `percentage` | `greater_than`, `less_than` | number |
-| `string` | `equals`, `not_equals` | string |
-
-<Warning>
-The API validates `operator` globally, but correct evaluation depends on pairing each `ruleType` with the right operator and value type from the catalog below.
-</Warning>
-
-## AI preset mapping
-
-In the frontend UI, validity presets map to numeric ranges. If you are calling the API directly, send range rules explicitly:
-
-- `very_relevant` -> `greater_than: 80` and `less_than: 100`
-- `somewhat_relevant` -> `greater_than: 50` and `less_than: 100`
-- `any` -> omit both rules
-
-Example:
+Boolean payload example:
 
 ```json
-{
-  "ruleType": "website_content_validation_score",
-  "operator": "greater_than",
-  "value": 80,
-  "enabled": true,
-  "id": "rule-min"
-}
+{ "rule": "is_honeypot", "dealbreaker": true, "enabled": true }
+```
+
+### Numeric rules
+
+Use `min` and/or `max`.
+
+- At least one of `min` or `max` is required.
+- `min` and `max` must be non-negative finite numbers.
+- If both are present, `max` must be greater than `min`.
+- `enabled` is not allowed unless you are using `enabled: false` to skip the rule.
+- `value` is not allowed.
+- Internally, `min` maps to `greater_than`, `max` maps to `less_than`.
+
+Numeric payload examples:
+
+```json
+{ "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 }
 ```
 
 ```json
-{
-  "ruleType": "website_content_validation_score",
-  "operator": "less_than",
-  "value": 100,
-  "enabled": true,
-  "id": "rule-max"
-}
+{ "rule": "dev_wallet_percent", "dealbreaker": true, "min": 5, "max": 20 }
 ```
 
-## Supported `ruleType` catalog
+### Enum rules
 
-The following list is sourced from `/meme_perfect_frontend/src/data/ruleTypes.ts` active entries.
+Currently only `risk_level`.
 
-### Security
+- `value` is required.
+- Allowed values: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` (case-insensitive input accepted).
+- Operator is internally fixed to `equals`.
+- `enabled` is not allowed unless you are using `enabled: false` to skip the rule.
+- `min` and `max` are not allowed.
 
-| ruleType | Name | valueType | Operators | Options |
-| --- | --- | --- | --- | --- |
-| `is_honeypot` | Exclude Honeypots | boolean | `is` | |
-| `is_mintable` | Exclude Mintable Tokens | boolean | `is` | |
-| `top_10_holder_percent` | Top 10 Holders % | percentage | `less_than`, `greater_than` | |
-| `dev_wallet_percent` | Dev Wallet % | percentage | `less_than`, `greater_than` | |
-| `is_lp_locked` | Require LP Locked | boolean | `is` | |
-| `risk_level` | Risk Level | string | `equals`, `not_equals` | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` |
-| `rugged` | Exclude Rugged Tokens | boolean | `is` | |
-| `lp_locked_pct` | LP Locked % | percentage | `less_than`, `greater_than` | |
-| `has_freeze_authority` | Exclude Tokens With Freeze Authority | boolean | `is` | |
-| `has_high_ownership` | Exclude High Ownership Concentration | boolean | `is` | |
-| `has_top10_high_ownership` | Exclude Top 10 High Ownership | boolean | `is` | |
-| `has_single_holder_ownership` | Exclude Single Holder Dominance | boolean | `is` | |
-| `has_creator_rug_history` | Exclude Creator Rug History | boolean | `is` | |
-| `has_low_lp_providers` | Exclude Low LP Providers | boolean | `is` | |
-| `has_low_liquidity` | Exclude Low Liquidity | boolean | `is` | |
-| `creator_has_multiple_tokens` | Exclude Creator With Multiple Tokens | boolean | `is` | |
-| `has_creator_balance` | Exclude Creator Still Holding Balance | boolean | `is` | |
-| `has_lockers` | Exclude Tokens With Lockers | boolean | `is` | |
-| `token_mutable` | Exclude Mutable Tokens | boolean | `is` | |
-| `has_transfer_fee` | Exclude Tokens With Transfer Fee | boolean | `is` | |
-| `token_age` | Token Age | number | `greater_than`, `less_than` | |
+Enum payload example:
 
-### Market
+```json
+{ "rule": "risk_level", "dealbreaker": true, "value": "LOW" }
+```
 
-| ruleType | Name | valueType | Operators | Options |
-| --- | --- | --- | --- | --- |
-| `sell_tax` | Sell Tax % | percentage | `less_than`, `greater_than` | |
-| `buy_tax` | Buy Tax % | percentage | `less_than`, `greater_than` | |
-| `liquidity_usd` | Liquidity ($) | number | `greater_than`, `less_than` | |
-| `market_cap` | Market Cap ($) | number | `greater_than`, `less_than` | |
-| `volume_24h` | 24h Trading Volume ($) | number | `greater_than`, `less_than` | |
-| `tx_count` | Transaction Count | number | `greater_than`, `less_than` | |
-| `num_buys` | Number of Buys | number | `greater_than`, `less_than` | |
-| `num_sells` | Number of Sells | number | `greater_than`, `less_than` | |
-| `snipers` | Snipers Holdings % | percentage | `less_than`, `greater_than` | |
-| `insiders` | Insiders Holdings % | percentage | `less_than`, `greater_than` | |
-| `bundle` | Bundlers Holdings % | percentage | `less_than`, `greater_than` | |
-| `bonding_progress` | Bonding Curve % | percentage | `greater_than`, `less_than` | |
-| `is_pump` | Only Pump Tokens | boolean | `is` | |
-| `holder_count` | Total Holders | number | `greater_than`, `less_than` | |
+## PATCH clear behavior
 
-### Socials
+`PATCH /strategies/:id` supports full replacement semantics for `rules`.
 
-| ruleType | Name | valueType | Operators | Options |
-| --- | --- | --- | --- | --- |
-| `has_website` | Require Website | boolean | `is` | |
-| `has_telegram` | Require Telegram | boolean | `is` | |
-| `has_twitter` | Require Twitter | boolean | `is` | |
-| `at_least_one_social` | Require At Least One Social | boolean | `is` | |
-| `website_has_ca` | Website Shows CA | boolean | `is` | |
-| `website_contains_token_name` | Website Contains $Token Name | boolean | `is`, `is_not` | |
-| `twitter_link_has_ca` | X Link Contains CA | boolean | `is`, `is_not` | |
-| `x_link_contains_token_name` | X Link Contains $Token Name | boolean | `is`, `is_not` | |
-| `twitter_effective_views` | X Views | number | `greater_than`, `less_than` | |
-| `x_community_member_count` | X Community Size | number | `greater_than`, `less_than` | |
-| `x_community_views_count` | X Community Views | number | `greater_than`, `less_than` | |
-| `twitter_effective_followers` | X Followers | number | `greater_than`, `less_than` | |
+- Omit `rules` to keep existing internal rules unchanged.
+- Send `rules: []` to clear both internal `dealbreakers` and `ruleGroups`.
+- `POST /strategies` still requires a non-empty `rules` array.
 
-### AI
+## Trigger update semantics
 
-| ruleType | Name | valueType | Operators | Options |
-| --- | --- | --- | --- | --- |
-| `website_content_validation_score` | Website Content Validity Score | number | `greater_than`, `less_than` | |
-| `x_content_validation_score` | X (Twitter) Content Validity Score | number | `greater_than`, `less_than` | |
+`PATCH /strategies/:id` uses replacement semantics for `triggers` too.
 
-## End-to-end payload example
+- Omit `triggers` to keep existing triggers unchanged.
+- Send `triggers` to replace the entire internal trigger set.
 
-Example create payload with mixed boolean, range, enum, and AI rules:
+## Full create payload example
 
 ```json
 {
@@ -235,76 +117,47 @@ Example create payload with mixed boolean, range, enum, and AI rules:
     "enabled": true,
     "minPercent": 80
   },
-  "triggers": [
-    {
-      "id": "trigger-1",
-      "eventType": "new_token_created",
-      "enabled": true
-    }
-  ],
-  "dealbreakers": [
-    {
-      "id": "db-1",
-      "ruleType": "is_honeypot",
-      "operator": "is",
-      "value": false,
-      "enabled": true
-    },
-    {
-      "id": "db-2",
-      "ruleType": "risk_level",
-      "operator": "not_equals",
-      "value": "CRITICAL",
-      "enabled": true
-    }
-  ],
-  "ruleGroups": [
-    {
-      "id": "market",
-      "name": "Market",
-      "logic": "AND",
-      "rules": [
-        {
-          "id": "r1",
-          "ruleType": "liquidity_usd",
-          "operator": "greater_than",
-          "value": 10000,
-          "enabled": true
-        },
-        {
-          "id": "r2",
-          "ruleType": "market_cap",
-          "operator": "less_than",
-          "value": 1000000,
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": "ai",
-      "name": "AI",
-      "logic": "AND",
-      "rules": [
-        {
-          "id": "r3",
-          "ruleType": "website_content_validation_score",
-          "operator": "greater_than",
-          "value": 80,
-          "enabled": true
-        },
-        {
-          "id": "r4",
-          "ruleType": "website_content_validation_score",
-          "operator": "less_than",
-          "value": 100,
-          "enabled": true
-        }
-      ]
-    }
+  "triggers": ["new_token_created"],
+  "rules": [
+    { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+    { "rule": "has_freeze_authority", "dealbreaker": true, "enabled": true },
+    { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+    { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
+    { "rule": "market_cap", "dealbreaker": false, "max": 1500000 },
+    { "rule": "has_twitter", "dealbreaker": false, "enabled": true },
+    { "rule": "website_content_validation_score", "dealbreaker": false, "min": 50 }
   ],
   "isActive": false
 }
 ```
+
+## Supported rule ids
+
+Source of truth: backend external rule catalog.
+
+### Security
+
+`is_honeypot`, `is_mintable`, `top_10_holder_percent`, `dev_wallet_percent`, `is_lp_locked`, `risk_level`, `rugged`, `lp_locked_pct`, `has_freeze_authority`, `has_high_ownership`, `has_top10_high_ownership`, `has_single_holder_ownership`, `has_creator_rug_history`, `has_low_lp_providers`, `has_low_liquidity`, `creator_has_multiple_tokens`, `has_creator_balance`, `has_lockers`, `risk_count`, `token_mutable`, `has_transfer_fee`, `token_age`
+
+<Info>
+`token_age` is evaluated in minutes.
+</Info>
+
+<Warning>
+Breaking change: on March 11, 2026, `token_age` runtime semantics moved from hours to minutes. Existing persisted thresholds were not auto-migrated.
+</Warning>
+
+### Market
+
+`sell_tax`, `buy_tax`, `liquidity_usd`, `market_cap`, `volume_24h`, `tx_count`, `num_buys`, `num_sells`, `kols`, `global_fees_paid`, `pro_traders`, `snipers`, `insiders`, `bundle`, `dev_migrations`, `dev_pairs_created`, `bonding_progress`, `is_pump`, `holder_count`
+
+### Socials
+
+`has_website`, `has_telegram`, `has_twitter`, `at_least_one_social`, `website_has_ca`, `website_contains_token_name`, `twitter_link_has_ca`, `x_link_contains_token_name`, `twitter_effective_views`, `x_community_member_count`, `x_community_views_count`, `twitter_effective_followers`
+
+### AI
+
+`website_content_validation_score`, `x_content_validation_score`
 
 <CardGroup cols={2}>
   <Card title="APIs" icon="code" href="/developers/apis">

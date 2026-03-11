@@ -145,10 +145,11 @@ When creating or updating Strategies, preserve these product terms exactly:
 
 For API payloads:
 
-- `triggers`, `dealbreakers`, `ruleGroups`, and `isActive` are core Strategy fields
+- `triggers`, `rules`, and `isActive` are core external Strategy request fields
 - `strict` is optional and controls data strictness
 - `alertCooldownMins` is optional and suppresses repeat alerts for the same token within the cooldown window
 - `matching.enabled` and `matching.minPercent` control Flexible Matching behavior
+- internal `dealbreakers` and `ruleGroups` are response fields produced by backend mapping
 
 ## Strategy payload format
 
@@ -164,47 +165,12 @@ Use this as the canonical create/update shape:
     "enabled": true,
     "minPercent": 80
   },
-  "triggers": [
-    {
-      "id": "trigger-1",
-      "eventType": "new_token_created",
-      "enabled": true
-    }
-  ],
-  "dealbreakers": [
-    {
-      "id": "db-1",
-      "ruleType": "is_honeypot",
-      "operator": "is",
-      "value": false,
-      "enabled": true
-    }
-  ],
-  "ruleGroups": [
-    {
-      "id": "security",
-      "name": "Security",
-      "logic": "AND",
-      "rules": []
-    },
-    {
-      "id": "market",
-      "name": "Market",
-      "logic": "AND",
-      "rules": []
-    },
-    {
-      "id": "socials",
-      "name": "Socials",
-      "logic": "AND",
-      "rules": []
-    },
-    {
-      "id": "ai",
-      "name": "AI",
-      "logic": "AND",
-      "rules": []
-    }
+  "triggers": ["new_token_created"],
+  "rules": [
+    { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+    { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+    { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
+    { "rule": "has_twitter", "dealbreaker": false, "enabled": true }
   ],
   "isActive": false
 }
@@ -219,8 +185,7 @@ Field notes:
 - `matching.enabled`: optional boolean
 - `matching.minPercent`: required when matching is enabled
 - `triggers`: required array
-- `dealbreakers`: required array
-- `ruleGroups`: required array using the four canonical groups
+- `rules`: required array
 - `isActive`: required boolean on create
 
 ## Canonical request and response examples
@@ -267,71 +232,12 @@ curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies' \
     "description": "Programmatic strategy for safer early launches",
     "strict": true,
     "alertCooldownMins": 30,
-    "triggers": [
-      {
-        "id": "trigger-new-token",
-        "eventType": "new_token_created",
-        "enabled": true
-      }
-    ],
-    "dealbreakers": [
-      {
-        "id": "db-honeypot",
-        "ruleType": "is_honeypot",
-        "operator": "is",
-        "value": false,
-        "enabled": true
-      }
-    ],
-    "ruleGroups": [
-      {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-risk",
-            "ruleType": "risk_level",
-            "operator": "not_equals",
-            "value": "CRITICAL",
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-liquidity-min",
-            "ruleType": "liquidity_usd",
-            "operator": "greater_than",
-            "value": 10000,
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-website",
-            "ruleType": "has_website",
-            "operator": "is",
-            "value": true,
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": []
-      }
+    "triggers": ["new_token_created"],
+    "rules": [
+      { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+      { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
+      { "rule": "has_website", "dealbreaker": false, "enabled": true }
     ],
     "matching": {
       "enabled": true,
@@ -375,8 +281,8 @@ Response:
           {
             "id": "r-risk",
             "ruleType": "risk_level",
-            "operator": "not_equals",
-            "value": "CRITICAL",
+            "operator": "equals",
+            "value": "LOW",
             "enabled": true
           }
         ]
@@ -440,39 +346,10 @@ curl -X PATCH 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98
   -H 'Content-Type: application/json' \
   -d '{
     "alertCooldownMins": 45,
-    "ruleGroups": [
-      {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-liquidity-min",
-            "ruleType": "liquidity_usd",
-            "operator": "greater_than",
-            "value": 15000,
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": []
-      }
+    "rules": [
+      { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+      { "rule": "liquidity_usd", "dealbreaker": false, "min": 15000 },
+      { "rule": "has_twitter", "dealbreaker": false, "enabled": true }
     ]
   }'
 ```
@@ -598,12 +475,7 @@ Use exactly these four rule groups:
 - `socials` with name `Socials`
 - `ai` with name `AI`
 
-Each group must include:
-
-- `id`
-- `name`
-- `logic` as `AND` or `OR`
-- `rules` as an array
+Internal grouping is handled by backend mapping into `Security`, `Market`, `Socials`, and `AI`. External clients should send only `rules[]`.
 
 ## Allowed trigger eventType values
 
@@ -618,28 +490,23 @@ Use only these documented `eventType` values:
 
 ## Rule object contract
 
-Each rule in `dealbreakers` or `ruleGroups[].rules` uses this shape:
+Each external rule in `rules[]` uses this shape:
 
 ```json
 {
-  "id": "rule-1",
-  "ruleType": "liquidity_usd",
-  "operator": "greater_than",
-  "value": 10000,
-  "enabled": true
+  "rule": "liquidity_usd",
+  "dealbreaker": false,
+  "min": 10000
 }
 ```
 
-Allowed operators:
+Validation rules:
 
-- `greater_than`
-- `less_than`
-- `equals`
-- `not_equals`
-- `is`
-- `is_not`
-
-Agents must pair operators with compatible rule types and values. Do not guess unsupported operator and value combinations.
+- boolean rules use `enabled` only
+- numeric rules use `min` and/or `max` only
+- enum rules (`risk_level`) use `value` only
+- `risk_level` supports `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` with internal `equals` mapping
+- unknown rules and wrong field types fail hard
 
 ## Rule catalog
 
@@ -665,6 +532,7 @@ Use only documented `ruleType` values. Group them under the four canonical rule 
 - `creator_has_multiple_tokens`
 - `has_creator_balance`
 - `has_lockers`
+- `risk_count`
 - `token_mutable`
 - `has_transfer_fee`
 - `token_age`
@@ -679,9 +547,14 @@ Use only documented `ruleType` values. Group them under the four canonical rule 
 - `tx_count`
 - `num_buys`
 - `num_sells`
+- `kols`
+- `global_fees_paid`
+- `pro_traders`
 - `snipers`
 - `insiders`
 - `bundle`
+- `dev_migrations`
+- `dev_pairs_created`
 - `bonding_progress`
 - `is_pump`
 - `holder_count`
@@ -708,11 +581,11 @@ Use only documented `ruleType` values. Group them under the four canonical rule 
 
 ## Rule value guidance
 
-Use these operator and value patterns:
+Use these external payload patterns:
 
-- boolean rules usually use `is` or `is_not` with `true` or `false`
-- numeric and percentage rules use `greater_than` or `less_than` with numeric values
-- string rules such as `risk_level` use `equals` or `not_equals`
+- boolean rules use `enabled` (`true` applies, `false` skips)
+- numeric and percentage rules use `min` and/or `max`
+- enum rules such as `risk_level` use `value` only
 
 Known enum values:
 
@@ -729,7 +602,7 @@ AI preset guidance:
 Use this order for most integrations:
 
 1. Call `GET /me` to confirm authentication, plan, and limits.
-2. Build a valid Strategy payload using the fixed rule groups and allowed trigger values.
+2. Build a valid Strategy payload using `rules[]` and allowed trigger values.
 3. Call `POST /strategies` to create the Strategy.
 4. Call `POST /strategies/:id/activate` to make it live.
 5. Call `GET /notifications` or `GET /notifications/:id` to read outcomes.

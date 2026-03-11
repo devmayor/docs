@@ -187,14 +187,27 @@ Required body fields:
 
 - `name` (string)
 - `triggers` (array)
-- `dealbreakers` (array)
-- `ruleGroups` (array)
+- `rules` (array)
 - `isActive` (boolean)
 
-Required for UI compatibility:
+Rules are sent as one flat list and remapped internally into:
 
-- Use four rule groups named exactly: `Security`, `Market`, `Socials`, `AI`
-- Use stable group IDs such as: `security`, `market`, `socials`, `ai`
+- dealbreakers
+- rule groups (`Security`, `Market`, `Socials`, `AI`)
+
+Rule item shape:
+
+- `rule` (string, required)
+- `dealbreaker` (boolean, required)
+- `enabled` (boolean, optional. `enabled: false` skips any rule type)
+- `min` / `max` (number, numeric rules only)
+- `value` (string, enum rules only: currently `risk_level`)
+
+Optional trigger config map (required for twitter trigger types):
+
+- `triggerConfigs.twitter_mention_direct.tagId`
+- `triggerConfigs.tweet_metadata_match.tagId`
+- `triggerConfigs.followed_dev_new_token_created` (optional; supports scoped followed-dev trigger config)
 
 Important strategy-level options:
 
@@ -218,43 +231,43 @@ curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies' \
     "name": "E2E Test Strategy",
     "strict": true,
     "alertCooldownMins": 30,
-    "triggers": [
-      {
-        "id": "t1",
-        "eventType": "new_token_created",
-        "enabled": true
-      }
-    ],
-    "dealbreakers": [],
-    "ruleGroups": [
-      {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": []
-      }
+    "triggers": ["new_token_created"],
+    "rules": [
+      { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+      { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
+      { "rule": "market_cap", "dealbreaker": false, "max": 1500000 },
+      { "rule": "has_twitter", "dealbreaker": false, "enabled": true }
     ],
     "isActive": false
   }'
 ```
+
+Twitter trigger example:
+
+```bash
+curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Twitter mentions by tag",
+    "triggers": ["twitter_mention_direct"],
+    "triggerConfigs": {
+      "twitter_mention_direct": {
+        "tagId": "all"
+      }
+    },
+    "rules": [
+      { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+      { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 }
+    ],
+    "isActive": true
+  }'
+```
+
+<Info>
+Response still returns internal `dealbreakers` and `ruleGroups`. Those are generated from your external `rules[]` payload.
+</Info>
 
 ```json
 {
@@ -270,34 +283,61 @@ curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies' \
         "enabled": true
       }
     ],
-    "dealbreakers": [],
-    "ruleGroups": [
+    "dealbreakers": [
       {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": []
+        "id": "d1f6f6fe-b6e7-4f65-a5ed-4cddf0f20274",
+        "ruleType": "is_honeypot",
+        "operator": "is",
+        "value": false,
+        "enabled": true
       },
       {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": []
+        "id": "4155b2c2-6459-4b09-a406-f6f45887ef4a",
+        "ruleType": "risk_level",
+        "operator": "equals",
+        "value": "LOW",
+        "enabled": true
       }
     ],
-    "strict": false,
+    "ruleGroups": [
+      {
+        "id": "b9793be5-2667-4d64-9d03-e8f89b022f75",
+        "name": "Market",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "ad59ec06-4f8b-490e-a7f6-78de34a37834",
+            "ruleType": "liquidity_usd",
+            "operator": "greater_than",
+            "value": 10000,
+            "enabled": true
+          },
+          {
+            "id": "95f08d8c-fb80-4c7f-a1ce-85ce6bb005ca",
+            "ruleType": "market_cap",
+            "operator": "less_than",
+            "value": 1500000,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "d967eeb9-b7d0-4aaf-a84a-45b378e56f2d",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "6d04ecb7-650c-4c66-94e6-0f4dd44bc45d",
+            "ruleType": "has_twitter",
+            "operator": "is",
+            "value": true,
+            "enabled": true
+          }
+        ]
+      }
+    ],
+    "strict": true,
+    "alertCooldownMins": 30,
     "isActive": false,
     "isGlobal": false,
     "createdAt": "2026-03-09T08:25:58.221Z",
@@ -329,34 +369,60 @@ curl -X GET 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd
         "enabled": true
       }
     ],
-    "dealbreakers": [],
-    "ruleGroups": [
+    "dealbreakers": [
       {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": []
+        "id": "d1f6f6fe-b6e7-4f65-a5ed-4cddf0f20274",
+        "ruleType": "is_honeypot",
+        "operator": "is",
+        "value": false,
+        "enabled": true
       },
       {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": []
+        "id": "4155b2c2-6459-4b09-a406-f6f45887ef4a",
+        "ruleType": "risk_level",
+        "operator": "equals",
+        "value": "LOW",
+        "enabled": true
       }
     ],
-    "strict": false,
+    "ruleGroups": [
+      {
+        "id": "b9793be5-2667-4d64-9d03-e8f89b022f75",
+        "name": "Market",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "ad59ec06-4f8b-490e-a7f6-78de34a37834",
+            "ruleType": "liquidity_usd",
+            "operator": "greater_than",
+            "value": 10000,
+            "enabled": true
+          },
+          {
+            "id": "95f08d8c-fb80-4c7f-a1ce-85ce6bb005ca",
+            "ruleType": "market_cap",
+            "operator": "less_than",
+            "value": 1500000,
+            "enabled": true
+          }
+        ]
+      },
+      {
+        "id": "d967eeb9-b7d0-4aaf-a84a-45b378e56f2d",
+        "name": "Socials",
+        "logic": "AND",
+        "rules": [
+          {
+            "id": "6d04ecb7-650c-4c66-94e6-0f4dd44bc45d",
+            "ruleType": "has_twitter",
+            "operator": "is",
+            "value": true,
+            "enabled": true
+          }
+        ]
+      }
+    ],
+    "strict": true,
     "alertCooldownMins": 30,
     "isActive": false,
     "createdAt": "2026-03-09T08:25:58.221Z",
@@ -368,6 +434,13 @@ curl -X GET 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd
 ### `PATCH /strategies/:id`
 
 Partially updates a Strategy. Uses the same schema as `POST /strategies`, but all fields are optional.
+
+Replacement semantics:
+
+- If `rules` is included, backend remaps and fully replaces internal `dealbreakers` and `ruleGroups`.
+- If `rules` is explicitly `[]`, backend clears internal `dealbreakers` and `ruleGroups`.
+- If `triggers` is included, backend fully replaces internal `triggers`.
+- If `rules` or `triggers` are omitted, existing values remain unchanged.
 
 ```bash
 curl -X PATCH 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
@@ -388,6 +461,17 @@ curl -X PATCH 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98
     "isActive": false
   }
 }
+```
+
+Clear all rules example:
+
+```bash
+curl -X PATCH 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-98fd-4cf5-8fd0-022421741c35' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "rules": []
+  }'
 ```
 
 ### `POST /strategies/:id/activate`
@@ -439,6 +523,160 @@ curl -X DELETE 'https://api.memeperfect.io/api/external/v1/strategies/9a46ddf3-9
 {
   "success": true
 }
+```
+
+### `GET /twitter/handles`
+
+Read-only list of tracked Twitter handles for the authenticated user.
+
+Query parameters:
+
+- `search` (optional)
+- `tagId` (optional)
+- `status` (`active` | `inactive`, optional)
+- `sortBy` (`handle` | `addedAt` | `lastUpdated`, optional)
+- `sortOrder` (`asc` | `desc`, optional)
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/twitter/handles?status=active&sortBy=addedAt&sortOrder=desc' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "handles": [
+    {
+      "id": "9a2e931b-c70f-4cde-aeac-15b7f2f7df91",
+      "handle": "@alpha",
+      "status": "active",
+      "tags": [
+        { "id": "40153fe3-a61a-4e8f-868f-fd6bdccfd6b2", "name": "Smart money" }
+      ],
+      "addedAt": "2026-03-11T10:00:00.000Z",
+      "lastUpdated": "2026-03-11T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+### `GET /twitter/tags`
+
+Read-only Twitter tags. Returns both user and platform tags by default.
+
+Query parameters:
+
+- `scope` (`all` | `user` | `platform`, default `all`)
+- `includeCounts` (boolean, default `true`)
+- `sortBy` (`name` | `createdAt` | `handleCount`, default `name`)
+- `sortOrder` (`asc` | `desc`, default `asc`)
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/twitter/tags?scope=all&includeCounts=true' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "tags": [
+    {
+      "id": "40153fe3-a61a-4e8f-868f-fd6bdccfd6b2",
+      "name": "Smart money",
+      "isPlatformTag": false,
+      "handleCount": 12
+    }
+  ]
+}
+```
+
+### `GET /devs/my`
+
+Lists your followed developers.
+
+Query parameters:
+
+- `page` (optional, default `1`)
+- `limit` (optional, default `20`)
+- `isActive` (optional)
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/devs/my?page=1&limit=20&isActive=true' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "developers": [],
+  "total": 0,
+  "page": 1,
+  "totalPages": 0,
+  "activeCount": 0
+}
+```
+
+### `GET /devs/tags`
+
+Returns your developer tags.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/devs/tags' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+### `GET /devs/:address/tags`
+
+Returns tag IDs currently assigned to a followed dev wallet.
+
+```bash
+curl -X GET 'https://api.memeperfect.io/api/external/v1/devs/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263/tags' \
+  -H 'X-API-Key: YOUR_API_KEY'
+```
+
+```json
+{
+  "tagIds": [
+    "b0d6a1d8-6e6c-4f80-9a61-5b8a3c4b2a11"
+  ]
+}
+```
+
+### `POST /devs/:address/add`
+
+Adds a wallet to your followed developers list.
+
+```bash
+curl -X POST 'https://api.memeperfect.io/api/external/v1/devs/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263/add' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "alias": "High conviction dev"
+  }'
+```
+
+### `PUT /devs/:address/update`
+
+Updates alias and/or active status for a followed dev wallet.
+
+```bash
+curl -X PUT 'https://api.memeperfect.io/api/external/v1/devs/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263/update' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "alias": "Updated alias",
+    "isActive": true
+  }'
+```
+
+### `PUT /devs/:address/tags`
+
+Replaces assigned tag IDs for a followed dev wallet.
+
+```bash
+curl -X PUT 'https://api.memeperfect.io/api/external/v1/devs/DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263/tags' \
+  -H 'X-API-Key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "tagIds": ["b0d6a1d8-6e6c-4f80-9a61-5b8a3c4b2a11"]
+  }'
 ```
 
 ### `GET /notifications`

@@ -44,10 +44,11 @@ Use this to confirm:
 This example strategy:
 
 - triggers on newly created tokens
-- enforces safety dealbreakers
+- uses a single external `rules[]` list
+- marks critical checks as dealbreakers
 - applies market and social filters
-- uses four UI-compatible rule groups
 - sets `alertCooldownMins` to suppress duplicate alerts per token
+- keeps default trigger config empty because this example does not use twitter trigger types
 
 ```bash
 curl -s -X POST "$MP_BASE_URL/strategies" \
@@ -58,107 +59,16 @@ curl -s -X POST "$MP_BASE_URL/strategies" \
     "description": "Programmatic strategy for safer early launches",
     "strict": true,
     "alertCooldownMins": 30,
-    "triggers": [
-      {
-        "id": "trigger-new-token",
-        "eventType": "new_token_created",
-        "enabled": true
-      }
-    ],
-    "dealbreakers": [
-      {
-        "id": "db-honeypot",
-        "ruleType": "is_honeypot",
-        "operator": "is",
-        "value": false,
-        "enabled": true
-      },
-      {
-        "id": "db-freeze",
-        "ruleType": "has_freeze_authority",
-        "operator": "is",
-        "value": false,
-        "enabled": true
-      }
-    ],
-    "ruleGroups": [
-      {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-risk",
-            "ruleType": "risk_level",
-            "operator": "not_equals",
-            "value": "CRITICAL",
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-liquidity-min",
-            "ruleType": "liquidity_usd",
-            "operator": "greater_than",
-            "value": 10000,
-            "enabled": true
-          },
-          {
-            "id": "r-mcap-max",
-            "ruleType": "market_cap",
-            "operator": "less_than",
-            "value": 1500000,
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-website",
-            "ruleType": "has_website",
-            "operator": "is",
-            "value": true,
-            "enabled": true
-          },
-          {
-            "id": "r-twitter",
-            "ruleType": "has_twitter",
-            "operator": "is",
-            "value": true,
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-ai-min",
-            "ruleType": "website_content_validation_score",
-            "operator": "greater_than",
-            "value": 50,
-            "enabled": true
-          },
-          {
-            "id": "r-ai-max",
-            "ruleType": "website_content_validation_score",
-            "operator": "less_than",
-            "value": 100,
-            "enabled": true
-          }
-        ]
-      }
+    "triggers": ["new_token_created"],
+    "rules": [
+      { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+      { "rule": "has_freeze_authority", "dealbreaker": true, "enabled": true },
+      { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
+      { "rule": "market_cap", "dealbreaker": false, "max": 1500000 },
+      { "rule": "has_website", "dealbreaker": false, "enabled": true },
+      { "rule": "has_twitter", "dealbreaker": false, "enabled": true },
+      { "rule": "website_content_validation_score", "dealbreaker": false, "min": 50 }
     ],
     "matching": {
       "enabled": true,
@@ -190,7 +100,7 @@ Check:
 
 - `isActive` is `true`
 - `alertCooldownMins` is present
-- group IDs and names are still `security/market/socials/ai` + `Security/Market/Socials/AI`
+- response contains internal `dealbreakers` and grouped rules mapped from your external `rules[]`
 
 ## Step 5: Update strategy rules
 
@@ -198,6 +108,7 @@ Example update:
 
 - increase liquidity threshold
 - tighten cooldown window
+- replace the full stored rules set with the new `rules[]` payload
 
 ```bash
 curl -s -X PATCH "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
@@ -205,52 +116,54 @@ curl -s -X PATCH "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
   -H "Content-Type: application/json" \
   -d '{
     "alertCooldownMins": 45,
-    "ruleGroups": [
-      {
-        "id": "security",
-        "name": "Security",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-risk",
-            "ruleType": "risk_level",
-            "operator": "not_equals",
-            "value": "CRITICAL",
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "market",
-        "name": "Market",
-        "logic": "AND",
-        "rules": [
-          {
-            "id": "r-liquidity-min",
-            "ruleType": "liquidity_usd",
-            "operator": "greater_than",
-            "value": 15000,
-            "enabled": true
-          }
-        ]
-      },
-      {
-        "id": "socials",
-        "name": "Socials",
-        "logic": "AND",
-        "rules": []
-      },
-      {
-        "id": "ai",
-        "name": "AI",
-        "logic": "AND",
-        "rules": []
-      }
+    "rules": [
+      { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
+      { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "liquidity_usd", "dealbreaker": false, "min": 15000 },
+      { "rule": "has_twitter", "dealbreaker": false, "enabled": true }
     ]
   }'
 ```
 
-## Step 6: Read notifications programmatically
+To fully clear existing rules, use replacement semantics with an empty list:
+
+```bash
+curl -s -X PATCH "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
+  -H "X-API-Key: $MP_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rules": []
+  }'
+```
+
+Trigger updates follow the same replacement behavior: if you send `triggers`, the full trigger set is replaced; if omitted, existing triggers stay unchanged.
+
+## Step 6: Optional twitter/dev discovery queries
+
+Get tracked twitter handles:
+
+```bash
+curl -s "$MP_BASE_URL/twitter/handles?status=active&sortBy=addedAt&sortOrder=desc" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Get twitter tags (all scopes by default):
+
+```bash
+curl -s "$MP_BASE_URL/twitter/tags?scope=all&includeCounts=true" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+Get followed developers:
+
+```bash
+curl -s "$MP_BASE_URL/devs/my?page=1&limit=20&isActive=true" \
+  -H "X-API-Key: $MP_API_KEY"
+```
+
+For twitter trigger strategies (`twitter_mention_direct` / `tweet_metadata_match`), include `triggerConfigs.<eventType>.tagId` in create/update payloads.
+
+## Step 7: Read notifications programmatically
 
 List recent notifications:
 
@@ -268,7 +181,7 @@ curl -s "$MP_BASE_URL/notifications/$MP_NOTIFICATION_ID" \
   -H "X-API-Key: $MP_API_KEY"
 ```
 
-## Step 7: Check performance
+## Step 8: Check performance
 
 Synchronous summary:
 
@@ -293,7 +206,7 @@ curl -s "$MP_BASE_URL/notifications/performance/jobs/$MP_JOB_ID" \
   -H "X-API-Key: $MP_API_KEY"
 ```
 
-## Step 8: Configure webhook delivery
+## Step 9: Configure webhook delivery
 
 Check current config:
 
@@ -321,14 +234,14 @@ Use returned fields:
 - `verifiedAt`
 - `verificationError` (if verification failed)
 
-## Step 9: Deactivate strategy
+## Step 10: Deactivate strategy
 
 ```bash
 curl -s -X POST "$MP_BASE_URL/strategies/$MP_STRATEGY_ID/deactivate" \
   -H "X-API-Key: $MP_API_KEY"
 ```
 
-## Step 10: Optional cleanup
+## Step 11: Optional cleanup
 
 ```bash
 curl -s -X DELETE "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
