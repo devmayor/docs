@@ -42,19 +42,34 @@
               "feature-guides/strategy-editor-deep-dive",
               "feature-guides/discovery-hubs/twitter-handles",
               "feature-guides/discovery-hubs/dev-tracking",
-              "ai-engine/narrative-engine",
               "feature-guides/alerts-and-notifications",
               "feature-guides/strategy-performance",
-              "feature-guides/backtests",
-              "feature-guides/advanced-alerting/watchlist"
+              "feature-guides/backtests"
+            ]
+          },
+          {
+            "group": "Strategy Deep Dives",
+            "pages": [
+              "strategy-deep-dives/tweet-mentions-token",
+              "strategy-deep-dives/tweet-metadata-match",
+              "strategy-deep-dives/followed-dev-launches"
+            ]
+          },
+          {
+            "group": "Developers",
+            "pages": [
+              "developers/apis",
+              "developers/api-walkthrough",
+              "developers/strategy-rules",
+              "developers/webhooks",
+              "developers/ai-agent"
             ]
           },
           {
             "group": "Reference",
             "pages": [
               "reference/data-point-glossary",
-              "reference/trigger-glossary",
-              "reference/apis"
+              "reference/trigger-glossary"
             ]
           },
           {
