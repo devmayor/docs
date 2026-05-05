@@ -180,6 +180,11 @@ Use this as a dictionary for Strategy Editor rule types.
   - Type: Percentage (%)
   - Operators: greater than, less than
 
+- **Launch Platform**
+  - Description: Origin-first launch platform classification. This is based on where the token started, not just where liquidity currently sits. The system normalizes launch origin from existing SolanaTracker data.
+  - Type: String (`pump_fun`, `letsbonk_fun`, `bags_fm`, `rapidlaunch`, `raydium_launchlab`, `dexlab`, `meteora`)
+  - Operators: equals, does not equal
+
 - **Only Pump Tokens**
   - Description: Indicates if the token is a Pump.fun token.
   - Type: Boolean (True/False)

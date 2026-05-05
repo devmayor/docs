@@ -46,7 +46,7 @@ This example strategy:
 - triggers on newly created tokens
 - uses a single external `rules[]` list
 - marks critical checks as dealbreakers
-- applies market and social filters
+- applies market, launch-origin, and social filters
 - sets `alertCooldownMins` to suppress duplicate alerts per token
 - keeps default trigger config empty because this example does not use twitter trigger types
 
@@ -64,6 +64,7 @@ curl -s -X POST "$MP_BASE_URL/strategies" \
       { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
       { "rule": "has_freeze_authority", "dealbreaker": true, "enabled": true },
       { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "launch_platform", "dealbreaker": false, "operator": "not_equals", "value": "pump_fun" },
       { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
       { "rule": "market_cap", "dealbreaker": false, "max": 1500000 },
       { "rule": "has_website", "dealbreaker": false, "enabled": true },
@@ -108,6 +109,7 @@ Example update:
 
 - increase liquidity threshold
 - tighten cooldown window
+- keep excluding Pump.fun-origin launches
 - replace the full stored rules set with the new `rules[]` payload
 
 ```bash
@@ -119,6 +121,7 @@ curl -s -X PATCH "$MP_BASE_URL/strategies/$MP_STRATEGY_ID" \
     "rules": [
       { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
       { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "launch_platform", "dealbreaker": false, "operator": "not_equals", "value": "pump_fun" },
       { "rule": "liquidity_usd", "dealbreaker": false, "min": 15000 },
       { "rule": "has_twitter", "dealbreaker": false, "enabled": true }
     ]

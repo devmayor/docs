@@ -201,7 +201,8 @@ Rule item shape:
 - `dealbreaker` (boolean, required)
 - `enabled` (boolean, optional. `enabled: false` skips any rule type)
 - `min` / `max` (number, numeric rules only)
-- `value` (string, enum rules only: currently `risk_level`)
+- `value` (string, enum rules only: `risk_level`, `launch_platform`)
+- `operator` (string, enum rules only: `equals` or `not_equals`; defaults to `equals`)
 
 Optional trigger config map (required for twitter trigger types):
 
@@ -235,6 +236,7 @@ curl -X POST 'https://api.memeperfect.io/api/external/v1/strategies' \
     "rules": [
       { "rule": "is_honeypot", "dealbreaker": true, "enabled": true },
       { "rule": "risk_level", "dealbreaker": true, "value": "LOW" },
+      { "rule": "launch_platform", "dealbreaker": false, "operator": "not_equals", "value": "pump_fun" },
       { "rule": "liquidity_usd", "dealbreaker": false, "min": 10000 },
       { "rule": "market_cap", "dealbreaker": false, "max": 1500000 },
       { "rule": "has_twitter", "dealbreaker": false, "enabled": true }

@@ -108,7 +108,7 @@ Market rules evaluate trading and economic metrics. These include:
 - **Taxes**: Buy and sell tax percentages
 - **Holder Distribution**: Top 10 holder percentage, dev wallet percentage
 - **Trading Activity**: snipers, insiders, bundles
-- **Platform Indicators**: Pump.fun tokens, bonding curve progress
+- **Platform Indicators**: launch platform, Pump.fun tokens, bonding curve progress
 
 **Available Market Rules:**
 
@@ -126,6 +126,7 @@ Market rules evaluate trading and economic metrics. These include:
 - Number of Sells: Sets bounds on sell transaction count (Min/Max)
 - Snipers %: Sets bounds on sniper percentage (Min/Max)
 - Bundle Transactions %: Sets bounds on bundle transaction percentage (Min/Max)
+- Launch Platform: Filters by origin platform such as Pump.fun, LetsBonk.fun, Bags.fm, RapidLaunch, Raydium LaunchLab, DexLab, or Meteora
 - Only Pump Tokens: Filters to only include pump tokens
 - Top 10 Holder %: Sets bounds on top 10 holder ownership percentage (Min/Max)
 
@@ -133,6 +134,7 @@ Market rules evaluate trading and economic metrics. These include:
 
 - Liquidity ($): Min $10,000
 - Market Cap ($): Min $50,000, Max $1,000,000
+- Launch Platform: does not equal Pump.fun
 - 24h Trading Volume ($): Min $20,000
 - Sell Tax %: Max 10%
 - Total Holders: Min 100
@@ -335,5 +337,4 @@ Switching from Advanced to Basic Mode may result in data loss if you've used fea
 Confirm Triggers and Rules. Save, optionally activate immediately. Your engine goes live.
 
 <Card title="Explore Twitter Handles" icon="compass" href="/feature-guides/discovery-hubs/twitter-handles" />
-
 

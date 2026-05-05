@@ -26,7 +26,8 @@ Rule fields:
 - `enabled`: optional boolean. `enabled: false` skips any rule type.
 - `min`: optional number. Used only for numeric rules.
 - `max`: optional number. Used only for numeric rules.
-- `value`: optional string. Used only for enum rules (`risk_level`).
+- `value`: optional string. Used only for enum rules such as `risk_level` and `launch_platform`.
+- `operator`: optional string. Used only for enum rules. Allowed values: `equals`, `not_equals`. Defaults to `equals` when omitted.
 
 <Warning>
 Unknown rule ids fail hard. Wrong field types or wrong field combinations fail hard with a clear error message that includes the blocking `rules[index]`.
@@ -71,18 +72,28 @@ Numeric payload examples:
 
 ### Enum rules
 
-Currently only `risk_level`.
-
 - `value` is required.
-- Allowed values: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` (case-insensitive input accepted).
-- Operator is internally fixed to `equals`.
-- `enabled` is not allowed unless you are using `enabled: false` to skip the rule.
+- `operator` is optional. Allowed values: `equals`, `not_equals`. If omitted, backend defaults to `equals`.
+- `enabled` is not allowed.
 - `min` and `max` are not allowed.
+
+Supported enum rules:
+
+- `risk_level`
+  - Allowed values: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` (case-insensitive input accepted).
+  - Important behavior: `risk_level` is threshold-like in the core rules engine. For example, `equals: LOW` matches only `LOW`, while `equals: HIGH` matches `HIGH`, `MEDIUM`, and `LOW`.
+- `launch_platform`
+  - Allowed values: `pump_fun`, `letsbonk_fun`, `bags_fm`, `rapidlaunch`, `raydium_launchlab`, `dexlab`, `meteora`
+  - Behavior: exact enum match for both `equals` and `not_equals`.
 
 Enum payload example:
 
 ```json
 { "rule": "risk_level", "dealbreaker": true, "value": "LOW" }
+```
+
+```json
+{ "rule": "launch_platform", "dealbreaker": false, "operator": "not_equals", "value": "pump_fun" }
 ```
 
 ## PATCH clear behavior
@@ -149,7 +160,7 @@ Breaking change: on March 11, 2026, `token_age` runtime semantics moved from hou
 
 ### Market
 
-`sell_tax`, `buy_tax`, `liquidity_usd`, `market_cap`, `volume_24h`, `tx_count`, `num_buys`, `num_sells`, `kols`, `global_fees_paid`, `pro_traders`, `snipers`, `insiders`, `bundle`, `dev_migrations`, `dev_pairs_created`, `bonding_progress`, `is_pump`, `holder_count`
+`sell_tax`, `buy_tax`, `liquidity_usd`, `market_cap`, `volume_24h`, `tx_count`, `num_buys`, `num_sells`, `kols`, `global_fees_paid`, `pro_traders`, `snipers`, `insiders`, `bundle`, `dev_migrations`, `dev_pairs_created`, `bonding_progress`, `launch_platform`, `is_pump`, `holder_count`
 
 ### Socials
 
